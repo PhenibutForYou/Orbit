@@ -6,7 +6,9 @@ db = SQLAlchemy()
 class Car(db.Model):
     __tablename__ = 'cars'
     
-    id = db.Column(db.String(10), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    
+    name = db.Column(db.String(100), nullable=False, default='Неизвестная машина')
     description = db.Column(db.Text, nullable=True, default='') 
     
     fuel_level = db.Column(db.Integer, nullable=False)
@@ -28,6 +30,7 @@ class Car(db.Model):
         return {
             'id': self.id,
             'type': 'car',
+            'name': self.name,
             'description': self.description,
             'fuel_level': self.fuel_level,
             'engine_temp': self.engine_temp,
@@ -45,7 +48,9 @@ class Car(db.Model):
 class GasStation(db.Model):
     __tablename__ = 'gas_stations'
     
-    id = db.Column(db.String(10), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    
+    name = db.Column(db.String(100), nullable=False, default='Неизвестная АЗС')
     description = db.Column(db.Text, nullable=True, default='')
     
     latitude = db.Column(db.Numeric(10, 6), nullable=False)
@@ -53,7 +58,7 @@ class GasStation(db.Model):
     
     fuel_level = db.Column(db.Integer, nullable=False)
     fuel_type = db.Column(db.String(10), nullable=False)
-    price = db.Column(db.Numeric(6, 2), nullable=False)
+    price = db.Column(db.Numeric(4, 2), nullable=False)
     occupancy = db.Column(db.Integer, nullable=False)
     status = db.Column(db.String(20), nullable=False, default='normal')
     last_update = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -62,6 +67,7 @@ class GasStation(db.Model):
         return {
             'id': self.id,
             'type': 'gas_station',
+            'name': self.name,
             'description': self.description,
             'latitude': float(self.latitude),
             'longitude': float(self.longitude),
@@ -76,7 +82,9 @@ class GasStation(db.Model):
 class Warehouse(db.Model):
     __tablename__ = 'warehouses'
     
-    id = db.Column(db.String(10), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    
+    name = db.Column(db.String(100), nullable=False, default='Неизвестный склад')
     description = db.Column(db.Text, nullable=True, default='')
     
     latitude = db.Column(db.Numeric(10, 6), nullable=False)
@@ -93,6 +101,7 @@ class Warehouse(db.Model):
         return {
             'id': self.id,
             'type': 'warehouse',
+            'name': self.name,
             'description': self.description,
             'latitude': float(self.latitude),
             'longitude': float(self.longitude),
@@ -107,7 +116,9 @@ class Warehouse(db.Model):
 class Drone(db.Model):
     __tablename__ = 'drones'
     
-    id = db.Column(db.String(10), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    
+    name = db.Column(db.String(100), nullable=False, default='Неизвестный дрон')
     description = db.Column(db.Text, nullable=True, default='')
     
     battery = db.Column(db.Integer, nullable=False)
@@ -130,6 +141,7 @@ class Drone(db.Model):
         return {
             'id': self.id,
             'type': 'drone',
+            'name': self.name,
             'description': self.description,
             'battery': self.battery,
             'propeller_rpm': self.propeller_rpm,
