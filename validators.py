@@ -48,7 +48,7 @@ class WarehouseSchema(BaseModel):
     name: str = Field(..., max_length=100)
     description: str = Field(..., max_length=500)
     capacity_used: int = Field(..., ge=0, le=100) 
-    temperature: int = Field(..., ge=0, le=40)
+    temperature: int = Field(..., ge=-5, le=40)
     humidity: int = Field(..., ge=0, le=100)
     trucks_count: int = Field(..., ge=0, le=50)
     latitude: float = Field(..., ge=-90, le=90)
@@ -57,7 +57,7 @@ class WarehouseSchema(BaseModel):
     def calculate_status(self) -> str:
         if (self.capacity_used >= 95 or self.temperature <= 5 or self.temperature >= 30 or self.humidity <= 20 or self.humidity >= 80):
             return "danger"
-        if (self.capacity_used >= 80 or self.temperature <= 10 or self.temperature >= 25 or self.humidity <= 30 or self.humidity >= 60):
+        if (self.capacity_used >= 80 or self.temperature < 10 or self.temperature > 25 or self.humidity < 30 or self.humidity > 70):
             return "warning"
         return "normal"
 
@@ -67,7 +67,7 @@ class DroneSchema(BaseModel):
     name: str = Field(..., max_length=100)
     description: str = Field(..., max_length=500)
     battery: int = Field(..., ge=0, le=100)
-    propeller_rpm: int = Field(..., ge=0, le=20000)
+    propeller_rpm: int = Field(..., ge=0, le=11000)
     speed: int = Field(..., ge=0, le=60)
     altitude: int = Field(..., ge=0)
     latitude: float = Field(..., ge=-90, le=90)
@@ -78,8 +78,8 @@ class DroneSchema(BaseModel):
     end_lon: float = Field(..., ge=-180, le=180)
 
     def calculate_status(self) -> str:
-        if (self.battery < 15 or self.propeller_rpm <= 1500 or self.propeller_rpm >= 10000):
+        if (self.battery < 15 or self.propeller_rpm <= 1500 or self.propeller_rpm >= 9500):
             return "danger"
-        if (self.battery < 30 or self.propeller_rpm <= 3000 or self.propeller_rpm >= 8000):
+        if (self.battery < 30 or self.propeller_rpm < 3000 or self.propeller_rpm > 8000):
             return "warning"
         return "normal"
