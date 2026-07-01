@@ -7,6 +7,8 @@ class Car(db.Model):
     __tablename__ = 'cars'
     
     id = db.Column(db.String(10), primary_key=True)
+    description = db.Column(db.Text, nullable=True, default='') 
+    
     fuel_level = db.Column(db.Integer, nullable=False)
     engine_temp = db.Column(db.Integer, nullable=False)
     speed = db.Column(db.Integer, nullable=False)
@@ -26,6 +28,7 @@ class Car(db.Model):
         return {
             'id': self.id,
             'type': 'car',
+            'description': self.description,
             'fuel_level': self.fuel_level,
             'engine_temp': self.engine_temp,
             'speed': self.speed,
@@ -43,6 +46,7 @@ class GasStation(db.Model):
     __tablename__ = 'gas_stations'
     
     id = db.Column(db.String(10), primary_key=True)
+    description = db.Column(db.Text, nullable=True, default='')
     
     latitude = db.Column(db.Numeric(10, 6), nullable=False)
     longitude = db.Column(db.Numeric(10, 6), nullable=False)
@@ -58,6 +62,7 @@ class GasStation(db.Model):
         return {
             'id': self.id,
             'type': 'gas_station',
+            'description': self.description,
             'latitude': float(self.latitude),
             'longitude': float(self.longitude),
             'fuel_level': self.fuel_level,
@@ -72,6 +77,7 @@ class Warehouse(db.Model):
     __tablename__ = 'warehouses'
     
     id = db.Column(db.String(10), primary_key=True)
+    description = db.Column(db.Text, nullable=True, default='')
     
     latitude = db.Column(db.Numeric(10, 6), nullable=False)
     longitude = db.Column(db.Numeric(10, 6), nullable=False)
@@ -87,6 +93,7 @@ class Warehouse(db.Model):
         return {
             'id': self.id,
             'type': 'warehouse',
+            'description': self.description,
             'latitude': float(self.latitude),
             'longitude': float(self.longitude),
             'capacity_used': self.capacity_used,
@@ -101,6 +108,8 @@ class Drone(db.Model):
     __tablename__ = 'drones'
     
     id = db.Column(db.String(10), primary_key=True)
+    description = db.Column(db.Text, nullable=True, default='')
+    
     battery = db.Column(db.Integer, nullable=False)
     propeller_rpm = db.Column(db.Integer, nullable=False)
     speed = db.Column(db.Integer, nullable=False)
@@ -121,6 +130,7 @@ class Drone(db.Model):
         return {
             'id': self.id,
             'type': 'drone',
+            'description': self.description,
             'battery': self.battery,
             'propeller_rpm': self.propeller_rpm,
             'speed': self.speed,
