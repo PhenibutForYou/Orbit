@@ -132,13 +132,13 @@ def azs_and_truks(data):
 def print_data(data):
     for i in data:
             if i['type'] == "car":
-                print(str(i['type']) + "_" + str(i['id']) + '#' + str(i['Fuel']) + '#' + str(i['Speed']) + '#' + str(i['coordinates'][0]) + '#' + str(i['coordinates'][1]) + '#' + str(i['start'][0]) + '#' + str(i['start'][1]) + '#' + str(i['end'][0]) + '#' + str(i['end'][1]))
+                print(str(i['type']) + "_" + str(i['id']) + '#' + str(i['Fuel']) + '#' + str(i['Speed']) + '#' + str(i['coordinates'][0]) + '#' + str(i['coordinates'][1]) + '#' + str(i['start'][0]) + '#' + str(i['start'][1]) + '#' + str(i['end'][0]) + '#' + str(i['end'][1]) + '#' + str(i['name']) + '#' + str(i['description']))
             elif i['type'] == 'gas':
-                print(str(i['type']) + "_" + str(i['id']) + '#' + str(i['coordinates'][0]) + '#' + str(i['coordinates'][1]) + '#' + str(i['fuel_level']) + '#' + str(i['fuel_type']) + '#' + str(i['price']) + '#' + str(i['occupancy']))
+                print(str(i['type']) + "_" + str(i['id']) + '#' + str(i['coordinates'][0]) + '#' + str(i['coordinates'][1]) + '#' + str(i['fuel_level']) + '#' + str(i['fuel_type']) + '#' + str(i['price']) + '#' + str(i['occupancy']) + '#' + str(i['name']) + '#' + str(i['description']))
             elif i['type'] == 'wrh':
-                print(str(i['type']) + "_" + str(i['id']) + '#' + str(i['coordinates'][0]) + '#' + str(i['coordinates'][1]) + '#' + str(i['goods_load']) + '#' + str(i['temperature']) + '#' + str(i['humidity']) + '#' + str(i['trucks_loading']))
+                print(str(i['type']) + "_" + str(i['id']) + '#' + str(i['coordinates'][0]) + '#' + str(i['coordinates'][1]) + '#' + str(i['goods_load']) + '#' + str(i['temperature']) + '#' + str(i['humidity']) + '#' + str(i['trucks_loading']) + '#' + str(i['name']) + '#' + str(i['description']))
             else:
-                print(str(i['type']) + "_" + str(i['id']) + '#' + str(i['coordinates'][0]) + '#' + str(i['coordinates'][1]) + '#' + str(i['charge']) + '#' + str(i['propeller_rpm']) + '#' + str(i['speed']) + '#' + str(i['altitude']) + '#' + str(i['start'][0]) + '#' + str(i['start'][1]) + '#' + str(i['end'][0]) + '#' + str(i['end'][1]))
+                print(str(i['type']) + "_" + str(i['id']) + '#' + str(i['coordinates'][0]) + '#' + str(i['coordinates'][1]) + '#' + str(i['charge']) + '#' + str(i['propeller_rpm']) + '#' + str(i['speed']) + '#' + str(i['altitude']) + '#' + str(i['start'][0]) + '#' + str(i['start'][1]) + '#' + str(i['end'][0]) + '#' + str(i['end'][1]) + '#' + str(i['name']) + '#' + str(i['description']))
 
 #Позволяет выходить из состояния аварии с прошестивем времени, которое у каждого объекта своё, при выходе топливо и заряд полные
 def recovery(data):
