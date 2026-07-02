@@ -13,11 +13,9 @@ bot = Bot(Token)
 dp = Dispatcher()
 
 SUBSFile = "subs.json"
-LOCKFile = asyncio.Lock()
 
 #Загрузка подписчиков
-async def load_subs():
-    async with LOCKFile:
+def load_subs():
         try:
             with open(SUBSFile, "r", encoding="utf-8") as f:
                 return set(json.load(f))
@@ -27,30 +25,29 @@ async def load_subs():
             return set()
 
 #Сохранение подписчиков
-async def save_subs(subs):
-    async with LOCKFile:
+def save_subs(subs):
         with open(SUBSFile, "w", encoding="utf-8") as f:
             json.dump(list(subs), f)
 
 #Добавление подписчика
-async def add_subs(chat_id):
-    subs = await load_subs()
+def add_subs(chat_id):
+    subs = load_subs()
     subs.add(chat_id)
-    await save_subs(subs)
+    save_subs(subs)
 
 #Удаление подписчика
-async def remove_subs(chat_id):
-    subs = await load_subs()
+def remove_subs(chat_id):
+    subs = load_subs()
     if chat_id in subs:
         subs.remove(chat_id)
-        await save_subs(subs)
+        save_subs(subs)
         return True
     return False
 
 #Уведомление для машин
-async def notify_car(obj_id,car_name,fuel_level,temperature,speed,car_latitude,
+def notify_car(obj_id,car_name,fuel_level,temperature,speed,car_latitude,
 car_longitude,start_latitude,start_longitude,end_latitude,end_longitude,status,date):
-    chat_id = await load_subs()
+    chat_id =  load_subs()
     msg = (
            f"Автомобиль: {car_name} идентификатор - {obj_id} изменил свой статус с нормального\n"
            f"Характеристики автомобиля: \n"
@@ -64,11 +61,11 @@ car_longitude,start_latitude,start_longitude,end_latitude,end_longitude,status,d
            f"Время обновления: {date}"
            )
     for sub in chat_id:
-        await bot.send_message(chat_id=sub, text=msg)
+        bot.send_message(chat_id=sub, text=msg)
 
 #Уведомление для АЗС
-async def notify_gas_station(obj_id,name,latitude,longitude,fuel_level,fuel_type,price,workload,status, date):
-    chat_id = await load_subs()
+def notify_gas_station(obj_id,name,latitude,longitude,fuel_level,fuel_type,price,workload,status, date):
+    chat_id = load_subs()
     msg = (
             f"Автомобильная заправочная станция: {name} идентификатор - {obj_id} изменил свой статус с нормального\n"
             f"Характеристики Автомобильной заправочной станции: \n"
@@ -81,11 +78,11 @@ async def notify_gas_station(obj_id,name,latitude,longitude,fuel_level,fuel_type
             f"Время обновления: {date}"
           )
     for sub in chat_id:
-        await bot.send_message(chat_id=sub, text=msg)
+        bot.send_message(chat_id=sub, text=msg)
 
 #Уведомление для склада
-async def notify_ware_house(obj_id,name,latitude,longitude,workload,temperature,humidity,quantity_of_truck,status,date):
-    chat_id = await load_subs()
+def notify_ware_house(obj_id,name,latitude,longitude,workload,temperature,humidity,quantity_of_truck,status,date):
+    chat_id =  load_subs()
     msg = (
             f"Склад: {name} идентификатор - {obj_id} изменил свой статус с нормального\n"
             f"Характеристики склада:\n"
@@ -98,12 +95,12 @@ async def notify_ware_house(obj_id,name,latitude,longitude,workload,temperature,
             f"Время обновления: {date}"
           )
     for sub in chat_id:
-        await bot.send_message(chat_id=sub, text=msg)
+        bot.send_message(chat_id=sub, text=msg)
 
 
 #Уведомление для дрона
-async def notify_drone(obj_id, name, drone_latitude, drone_longitude,charge,altitude,propeller_speed_pm,speed, start_latitude,start_longitude,end_latitude,end_longitude,status,date):
-    chat_id = await load_subs()
+def notify_drone(obj_id, name, drone_latitude, drone_longitude,charge,altitude,propeller_speed_pm,speed, start_latitude,start_longitude,end_latitude,end_longitude,status,date):
+    chat_id =  load_subs()
     msg = (
             f"Дрон: {name} идентификатор - {obj_id} изменил свой статус с нормального\n"
             f"Характеристики дрона:\n"
@@ -118,27 +115,27 @@ async def notify_drone(obj_id, name, drone_latitude, drone_longitude,charge,alti
             f"Время обновления: {date}"
           )
     for sub in chat_id:
-        await bot.send_message(chat_id=sub, text=msg)
+        bot.send_message(chat_id=sub, text=msg)
 
 #Команда /start
 @dp.message(Command("start"))
-async def start(message: Message):
+def start(message: Message):
     chat_id = message.chat.id
-    await add_subs(chat_id)
-    await message.answer("Бот запущен! Я буду присылать уведомления о критических и предупреждающих состояниях объектов. Для полной остановки бота отправьте /stop")
+    add_subs(chat_id)
+    message.answer("Бот запущен! Я буду присылать уведомления о критических и предупреждающих состояниях объектов. Для полной остановки бота отправьте /stop")
 
 #Команда /report - (не рабочая)
 @dp.message(Command("report"))
-async def report(message: Message):
-    await message.answer("Вы открыли пасхалку, теперь у вас есть ачивка - исследователь")
+def report(message: Message):
+     message.answer("Вы открыли пасхалку, теперь у вас есть ачивка - исследователь")
 
 #Команда /stop
 @dp.message(Command("stop"))
-async def stop(message: Message):
-    if await remove_subs(message.chat.id):
-        await message.answer("Вы отписались от уведомлений. Чтобы снова подписаться, воспользуйтесь командой /start")
+def stop(message: Message):
+    if remove_subs(message.chat.id):
+        message.answer("Вы отписались от уведомлений. Чтобы снова подписаться, воспользуйтесь командой /start")
     else:
-        await message.answer("Вы не были подписаны на уведомления")
+        message.answer("Вы не были подписаны на уведомления")
         
 async def main():
     await dp.start_polling(bot)
