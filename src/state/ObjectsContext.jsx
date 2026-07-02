@@ -37,20 +37,29 @@ function mergeTelemetry(currentTelemetry = [], updates = []) {
 
   const updatesByKey = new Map(updates.map((item) => [item.key, item]));
 
-  return currentTelemetry.map((item) => updatesByKey.get(item.key) ?? item);
+  return currentTelemetry.map((item) => {
+    const update = updatesByKey.get(item.key);
+
+    if (!update) {
+      return item;
+    }
+
+    return {
+      ...item,
+      ...update,
+    };
+  });
 }
 
 function applyObjectPatch(object, patch = {}) {
-  const telemetry = patch.telemetry
-    ?? mergeTelemetry(object.telemetry, patch.telemetryUpdates);
-
-  return new InfrastructureObject({
+  return {
     ...object,
     ...patch,
-    telemetry,
+    telemetry: patch.telemetry
+      ?? mergeTelemetry(object.telemetry, patch.telemetryUpdates ?? []),
     static: patch.static ?? object.static,
-    updatedAt: patch.updatedAt ?? patch.lastUpdated ?? object.updatedAt,
-  }).toDTO();
+    updatedAt: patch.updatedAt ?? object.updatedAt,
+  };
 }
 
 function getEventUpdatedAt(event) {
