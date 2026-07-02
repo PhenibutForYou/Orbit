@@ -54,15 +54,16 @@ def change_coordinates(coord, endcoord, speed):
     step = speed / 3600 * frame
     dx = endcoord[0] - coord[0]
     dy = endcoord[1] - coord[1]
-    #Расстояние между объектом и конечной точкой
     dist = sqrt(dx**2 + dy**2)
-    #Если очень близко
     if dist <= step:
-        coord[0], coord[1] = endcoord[0], endcoord[1]
+        coord[0] = round(endcoord[0], 5)
+        coord[1] = round(endcoord[1], 5)
     else:
-        #Расчёт получившихся координат по пропорции
-        coord[0] += step * dx / dist
-        coord[1] += step * dy / dist
+        # Округляем приращение и затем сумму
+        add_x = round(step * dx / dist, 5)
+        add_y = round(step * dy / dist, 5)
+        coord[0] = round(coord[0] + add_x, 5)
+        coord[1] = round(coord[1] + add_y, 5)
     return coord
 
 #Функция, которая изменяет все данные
