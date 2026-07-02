@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+
+  simulation:
+    build: ./emulator
+    volumes:
+      - ./data.json:/app/data.json
+    restart: unless-stopped
