@@ -3,6 +3,9 @@ from datetime import datetime
 
 db = SQLAlchemy()
 
+def get_local_time():
+    return datetime.now()
+
 class Car(db.Model):
     __tablename__ = 'cars'
     
@@ -24,7 +27,7 @@ class Car(db.Model):
     end_lon = db.Column(db.Numeric(10, 6), nullable=False)
     
     status = db.Column(db.String(20), nullable=False, default='normal')
-    last_update = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_update = db.Column(db.DateTime, default=get_local_time, onupdate=get_local_time)
     
     def to_dict(self):
         return {
@@ -61,7 +64,7 @@ class GasStation(db.Model):
     price = db.Column(db.Numeric(4, 2), nullable=False)
     occupancy = db.Column(db.Integer, nullable=False)
     status = db.Column(db.String(20), nullable=False, default='normal')
-    last_update = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_update = db.Column(db.DateTime, default=get_local_time, onupdate=get_local_time)
     
     def to_dict(self):
         return {
@@ -95,7 +98,7 @@ class Warehouse(db.Model):
     humidity = db.Column(db.Integer, nullable=False)
     trucks_count = db.Column(db.Integer, nullable=False)
     status = db.Column(db.String(20), nullable=False, default='normal')
-    last_update = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_update = db.Column(db.DateTime, default=get_local_time, onupdate=get_local_time)
     
     def to_dict(self):
         return {
@@ -135,7 +138,7 @@ class Drone(db.Model):
     end_lon = db.Column(db.Numeric(10, 6), nullable=False)
     
     status = db.Column(db.String(20), nullable=False, default='normal')
-    last_update = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_update = db.Column(db.DateTime, default=get_local_time, onupdate=get_local_time)
     
     def to_dict(self):
         return {
