@@ -11,10 +11,10 @@ countOfFrame = 0
 #Расчитывает вероятность попадения в аварию
 def accident_probability(data):
         if random.randint(1, 100) > data['chance']:
-            data['chance'] = min(100, data['chance'] + random.randint(2, 5))
+            data['chance'] = min(100, data['chance'] + random.randint(1, 3))
             return 0
         else:
-            data['chance'] = max(0, data['chance'] - 50)
+            data['chance'] = max(0, data['chance'] - 80)
             return 1
 
 #Изменяет значение элемента в зависимости от minVal, maxVal, результатов расчёта аварии и интервала изменения данных
@@ -60,8 +60,8 @@ def change_coordinates(coord, endcoord, speed):
         coord[1] = round(endcoord[1], 5)
     else:
         # Округляем приращение и затем сумму
-        add_x = round(step * dx / dist, 5)
-        add_y = round(step * dy / dist, 5)
+        add_x = round(step * dx / dist * 20, 5)
+        add_y = round(step * dy / dist * 20, 5)
         coord[0] = round(coord[0] + add_x, 5)
         coord[1] = round(coord[1] + add_y, 5)
     return coord
