@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Literal
+from decimal import Decimal
 
 # 1. Машина
 class CarSchema(BaseModel):
@@ -9,12 +10,12 @@ class CarSchema(BaseModel):
     fuel_level: int = Field(..., ge=0, le=100)
     engine_temp: int = Field(..., ge=0, le=200)
     speed: int = Field(..., ge=0, le=170)
-    latitude: float = Field(..., ge=-90, le=90)
-    longitude: float = Field(..., ge=-180, le=180)
-    start_lat: float = Field(..., ge=-90, le=90)
-    start_lon: float = Field(..., ge=-180, le=180)
-    end_lat: float = Field(..., ge=-90, le=90)
-    end_lon: float = Field(..., ge=-180, le=180)
+    latitude: Decimal = Field(..., ge=-90, le=90, max_digits=10, decimal_places=6)
+    longitude: Decimal = Field(..., ge=-180, le=180, max_digits=10, decimal_places=6)
+    start_lat: Decimal = Field(..., ge=-90, le=90, max_digits=10, decimal_places=6)
+    start_lon: Decimal = Field(..., ge=-180, le=180, max_digits=10, decimal_places=6)
+    end_lat: Decimal = Field(..., ge=-90, le=90, max_digits=10, decimal_places=6)
+    end_lon: Decimal = Field(..., ge=-180, le=180, max_digits=10, decimal_places=6)
 
     def calculate_status(self) -> str:
         if (self.fuel_level < 5 or self.engine_temp <= 40 or self.engine_temp >= 160 or self.speed <= 10 or self.speed >= 160):
@@ -28,11 +29,11 @@ class GasStationSchema(BaseModel):
     id: int = Field(..., ge=1)
     name: str = Field(..., max_length=100)
     description: str = Field(..., max_length=500)
-    latitude: float = Field(..., ge=-90, le=90)
-    longitude: float = Field(..., ge=-180, le=180)
+    latitude: Decimal = Field(..., ge=-90, le=90, max_digits=10, decimal_places=6)
+    longitude: Decimal = Field(..., ge=-180, le=180, max_digits=10, decimal_places=6)
     fuel_level: int = Field(..., ge=0, le=100)
-    fuel_type: Literal["АИ-95", "АИ-98", "АИ-100", "Дизель"]
-    price: float = Field(..., gt=0)
+    fuel_type: Literal["AI-92", "AI-95", "AI-98", "AI-100", "DT"]
+    price: Decimal = Field(..., gt=0, max_digits=4, decimal_places=2)
     occupancy: int = Field(..., ge=0)
 
     def calculate_status(self) -> str:
@@ -51,13 +52,13 @@ class WarehouseSchema(BaseModel):
     temperature: int = Field(..., ge=-5, le=40)
     humidity: int = Field(..., ge=0, le=100)
     trucks_count: int = Field(..., ge=0, le=50)
-    latitude: float = Field(..., ge=-90, le=90)
-    longitude: float = Field(..., ge=-180, le=180)
+    latitude: Decimal = Field(..., ge=-90, le=90, max_digits=10, decimal_places=6)
+    longitude: Decimal = Field(..., ge=-180, le=180, max_digits=10, decimal_places=6)
 
     def calculate_status(self) -> str:
-        if (self.capacity_used >= 95 or self.temperature <= 5 or self.temperature >= 30 or self.humidity <= 20 or self.humidity >= 80):
+        if (self.capacity_used >= 95 or self.temperature <= 5 or self.temperature >= 30 or self.humidity <= 20 or self.humidity >= 80 or self.trucks_count >= 45):
             return "danger"
-        if (self.capacity_used >= 80 or self.temperature < 10 or self.temperature > 25 or self.humidity < 30 or self.humidity > 70):
+        if (self.capacity_used >= 80 or self.temperature < 10 or self.temperature > 25 or self.humidity < 30 or self.humidity > 70 or self.trucks_count > 40):
             return "warning"
         return "normal"
 
@@ -68,18 +69,18 @@ class DroneSchema(BaseModel):
     description: str = Field(..., max_length=500)
     battery: int = Field(..., ge=0, le=100)
     propeller_rpm: int = Field(..., ge=0, le=11000)
-    speed: int = Field(..., ge=0, le=60)
-    altitude: int = Field(..., ge=0)
-    latitude: float = Field(..., ge=-90, le=90)
-    longitude: float = Field(..., ge=-180, le=180)
-    start_lat: float = Field(..., ge=-90, le=90)
-    start_lon: float = Field(..., ge=-180, le=180)
-    end_lat: float = Field(..., ge=-90, le=90)
-    end_lon: float = Field(..., ge=-180, le=180)
+    speed: int = Field(..., ge=0, le=140)
+    altitude: int = Field(..., ge=0, le=150)
+    latitude: Decimal = Field(..., ge=-90, le=90, max_digits=10, decimal_places=6)
+    longitude: Decimal = Field(..., ge=-180, le=180, max_digits=10, decimal_places=6)
+    start_lat: Decimal = Field(..., ge=-90, le=90, max_digits=10, decimal_places=6)
+    start_lon: Decimal = Field(..., ge=-180, le=180, max_digits=10, decimal_places=6)
+    end_lat: Decimal = Field(..., ge=-90, le=90, max_digits=10, decimal_places=6)
+    end_lon: Decimal = Field(..., ge=-180, le=180, max_digits=10, decimal_places=6)
 
     def calculate_status(self) -> str:
-        if (self.battery < 15 or self.propeller_rpm <= 1500 or self.propeller_rpm >= 9500):
+        if (self.battery < 15 or self.propeller_rpm <= 1500 or self.propeller_rpm >= 9500 or self.speed <= 10 or self.speed >= 160):
             return "danger"
-        if (self.battery < 30 or self.propeller_rpm < 3000 or self.propeller_rpm > 8000):
+        if (self.battery < 30 or self.propeller_rpm < 3000 or self.propeller_rpm > 8000 or self.speed < 60 or self.speed > 110):
             return "warning"
         return "normal"
