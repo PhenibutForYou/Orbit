@@ -1,18 +1,19 @@
 import { InfrastructureObject } from "../domain/InfrastructureObject.js";
 import { API_CONFIG } from "../utils/constants.js";
 import { buildApiUrl, requestJson } from "./httpClient.js";
+import { devMonitoringBackend } from "./devMonitoringBackend.js";
 
 const markerIconsByType = {
-  car: "/images/car_marker.svg",
-  warehouse: "/images/warehouse_marker.svg",
-  "fuel-station": "/images/fuel_station_marker.svg",
-  drone: "/images/drone_marker.svg",
+  car: "/images/car_icon.svg",
+  warehouse: "/images/warehouse_icon.svg",
+  "fuel-station": "/images/azs_icon.svg",
+  drone: "/images/drone_icon.svg",
 };
 
 function normalizeObject(payload = {}) {
   return new InfrastructureObject({
     ...payload,
-    icon: payload.icon ?? markerIconsByType[payload.type] ?? "/images/warehouse_marker.svg",
+    icon: payload.icon ?? markerIconsByType[payload.type] ?? "/images/warehouse_icon.svg",
     static: payload.static ?? [],
     telemetry: payload.telemetry ?? [],
   }).toDTO();
@@ -67,6 +68,15 @@ function subscribeWebSocket(callback) {
 
 export const monitoringApi = {
   async getSnapshot() {
+    if (API_CONFIG.realtimeTransport === "mock") {
+      const snapshot = await devMonitoringBackend.getSnapshot();
+
+      return {
+        objects: snapshot.objects.map(normalizeObject),
+        maxObjects: snapshot.maxObjects,
+      };
+    }
+
     const payload = await requestJson(API_CONFIG.objectsEndpoint);
 
     return {
@@ -80,28 +90,12 @@ export const monitoringApi = {
       return () => {};
     }
 
+    if (API_CONFIG.realtimeTransport === "mock") {
+      return devMonitoringBackend.subscribe((event) => callback(normalizeEvent(event)));
+    }
+
     return API_CONFIG.realtimeTransport === "ws"
       ? subscribeWebSocket(callback)
       : subscribeSse(callback);
-  },
-
-  addObject(payload) {
-    return requestJson(API_CONFIG.objectsEndpoint, {
-      method: "POST",
-      body: payload,
-    });
-  },
-
-  updateObject(id, patch) {
-    return requestJson(`${API_CONFIG.objectsEndpoint}/${encodeURIComponent(id)}`, {
-      method: "PATCH",
-      body: patch,
-    });
-  },
-
-  removeObject(id) {
-    return requestJson(`${API_CONFIG.objectsEndpoint}/${encodeURIComponent(id)}`, {
-      method: "DELETE",
-    });
   },
 };

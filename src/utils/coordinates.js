@@ -1,6 +1,6 @@
 export const MAP_SURFACE_WIDTH = 2400;
 export const MAP_SURFACE_HEIGHT = 1600;
-export const MAP_COORDINATE_LIMIT = 80;
+export const MAP_COORDINATE_LIMIT = 100;
 
 export function createRandomCoordinates() {
   const toPreciseCoordinate = () => (

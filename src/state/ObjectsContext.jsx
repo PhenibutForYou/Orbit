@@ -1,5 +1,14 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+} from "react";
 import { monitoringApi } from "../api/monitoringApi.js";
+import { InfrastructureObject } from "../domain/InfrastructureObject.js";
 import { MAX_OBJECTS_COUNT } from "../utils/constants.js";
 
 const ObjectsContext = createContext(null);
@@ -32,22 +41,32 @@ function mergeTelemetry(currentTelemetry = [], updates = []) {
 }
 
 function applyObjectPatch(object, patch = {}) {
-  return {
+  const telemetry = patch.telemetry
+    ?? mergeTelemetry(object.telemetry, patch.telemetryUpdates);
+
+  return new InfrastructureObject({
     ...object,
     ...patch,
-    telemetry: patch.telemetry ?? mergeTelemetry(object.telemetry, patch.telemetryUpdates),
+    telemetry,
     static: patch.static ?? object.static,
-  };
+    updatedAt: patch.updatedAt ?? patch.lastUpdated ?? object.updatedAt,
+  }).toDTO();
 }
 
 function getEventUpdatedAt(event) {
-  return event.patch?.updatedAt ?? event.object?.updatedAt ?? null;
+  return event.patch?.updatedAt
+    ?? event.object?.updatedAt
+    ?? event.updatedAt
+    ?? null;
 }
 
 function reducer(state, action) {
   switch (action.type) {
     case "objectsLoaded": {
-      const activeStillExists = action.objects.some((item) => item.id === state.activeObjectId);
+      const activeStillExists = action.objects.some(
+        (item) => item.id === state.activeObjectId,
+      );
+
       const objects = action.animate
         ? action.objects.map((item) => ({ ...item, uiState: "entering" }))
         : action.objects;
@@ -79,9 +98,9 @@ function reducer(state, action) {
         activeObjectId: action.id,
         markerPulse: action.pulse
           ? {
-            objectId: action.id,
-            token: state.markerPulse.token + 1,
-          }
+              objectId: action.id,
+              token: state.markerPulse.token + 1,
+            }
           : state.markerPulse,
       };
 
@@ -89,13 +108,16 @@ function reducer(state, action) {
       const event = action.event;
 
       if (event.type === "created") {
-        const alreadyExists = state.objects.some((item) => item.id === event.object.id);
+        const alreadyExists = state.objects.some(
+          (item) => item.id === event.object.id,
+        );
 
         return {
           ...state,
-          objects: alreadyExists || state.objects.length >= state.maxObjectsCount
-            ? state.objects
-            : [...state.objects, { ...event.object, uiState: "entering" }],
+          objects:
+            alreadyExists || state.objects.length >= state.maxObjectsCount
+              ? state.objects
+              : [...state.objects, { ...event.object, uiState: "entering" }],
           lastEventAt: getEventUpdatedAt(event) ?? state.lastEventAt,
         };
       }
@@ -118,7 +140,9 @@ function reducer(state, action) {
       }
 
       if (event.type === "deleted") {
-        const objectExists = state.objects.some((item) => item.id === event.objectId);
+        const objectExists = state.objects.some(
+          (item) => item.id === event.objectId,
+        );
 
         if (!objectExists) {
           return state;
@@ -127,9 +151,14 @@ function reducer(state, action) {
         return {
           ...state,
           objects: state.objects.map((item) => (
-            item.id === event.objectId ? { ...item, uiState: "removing" } : item
+            item.id === event.objectId
+              ? { ...item, uiState: "removing" }
+              : item
           )),
-          activeObjectId: state.activeObjectId === event.objectId ? null : state.activeObjectId,
+          activeObjectId:
+            state.activeObjectId === event.objectId
+              ? null
+              : state.activeObjectId,
           lastEventAt: getEventUpdatedAt(event) ?? state.lastEventAt,
         };
       }
@@ -141,7 +170,9 @@ function reducer(state, action) {
       return {
         ...state,
         objects: state.objects.map((item) => (
-          item.id === action.id && item.uiState === action.uiState ? { ...item, uiState: null } : item
+          item.id === action.id && item.uiState === action.uiState
+            ? { ...item, uiState: null }
+            : item
         )),
       };
 
@@ -172,45 +203,68 @@ export function ObjectsProvider({ children }) {
   useEffect(() => {
     let mounted = true;
 
-    monitoringApi.getSnapshot().then((snapshot) => {
-      if (!mounted) {
-        return;
-      }
+    monitoringApi
+      .getSnapshot()
+      .then((snapshot) => {
+        if (!mounted) {
+          return;
+        }
 
-      dispatch({
-        type: "objectsLoaded",
-        objects: snapshot.objects,
-        maxObjectsCount: snapshot.maxObjects,
-        animate: true,
+        dispatch({
+          type: "objectsLoaded",
+          objects: snapshot.objects,
+          maxObjectsCount: snapshot.maxObjects,
+          animate: true,
+        });
+
+        for (const object of snapshot.objects) {
+          scheduleAction(
+            {
+              type: "clearUiState",
+              id: object.id,
+              uiState: "entering",
+            },
+            UI_ENTER_DELAY_MS,
+          );
+        }
+      })
+      .catch((error) => {
+        if (!mounted) {
+          return;
+        }
+
+        dispatch({
+          type: "objectsLoadFailed",
+          error: error.message ?? "Failed to load objects",
+        });
       });
-
-      for (const object of snapshot.objects) {
-        scheduleAction({ type: "clearUiState", id: object.id, uiState: "entering" }, UI_ENTER_DELAY_MS);
-      }
-    }).catch((error) => {
-      if (!mounted) {
-        return;
-      }
-
-      dispatch({
-        type: "objectsLoadFailed",
-        error: error.message ?? "Failed to load objects",
-      });
-    });
 
     let unsubscribe = () => {};
 
     try {
       unsubscribe = monitoringApi.subscribe((event) => {
-      dispatch({ type: "eventReceived", event });
+        dispatch({ type: "eventReceived", event });
 
-      if (event.type === "created") {
-        scheduleAction({ type: "clearUiState", id: event.object.id, uiState: "entering" }, UI_ENTER_DELAY_MS);
-      }
+        if (event.type === "created") {
+          scheduleAction(
+            {
+              type: "clearUiState",
+              id: event.object.id,
+              uiState: "entering",
+            },
+            UI_ENTER_DELAY_MS,
+          );
+        }
 
-      if (event.type === "deleted") {
-        scheduleAction({ type: "removeObjectCompleted", id: event.objectId }, UI_REMOVE_DURATION_MS);
-      }
+        if (event.type === "deleted") {
+          scheduleAction(
+            {
+              type: "removeObjectCompleted",
+              id: event.objectId,
+            },
+            UI_REMOVE_DURATION_MS,
+          );
+        }
       });
     } catch (error) {
       dispatch({
@@ -222,9 +276,11 @@ export function ObjectsProvider({ children }) {
     return () => {
       mounted = false;
       unsubscribe();
+
       for (const timeoutId of animationTimersRef.current) {
         window.clearTimeout(timeoutId);
       }
+
       animationTimersRef.current.clear();
     };
   }, [scheduleAction]);
@@ -235,46 +291,21 @@ export function ObjectsProvider({ children }) {
   );
 
   const setActiveObject = useCallback((id, options = {}) => {
-    dispatch({ type: "setActiveObject", id, pulse: Boolean(options.pulse) });
+    dispatch({
+      type: "setActiveObject",
+      id,
+      pulse: Boolean(options.pulse),
+    });
   }, []);
 
-  const addObject = useCallback(async () => {
-    if (state.objects.length >= state.maxObjectsCount) {
-      return null;
-    }
-
-    return monitoringApi.addObject({});
-  }, [state.maxObjectsCount, state.objects.length]);
-
-  const removeObject = useCallback(async (id) => {
-    await monitoringApi.removeObject(id);
-  }, []);
-
-  const removeLastObject = useCallback(async () => {
-    const lastObject = state.objects.at(-1);
-
-    if (!lastObject) {
-      return null;
-    }
-
-    await monitoringApi.removeObject(lastObject.id);
-    return lastObject.id;
-  }, [state.objects]);
-
-  const updateObject = useCallback(async (id, patch) => {
-    return monitoringApi.updateObject(id, patch);
-  }, []);
-
-  const value = useMemo(() => ({
-    ...state,
-    activeObject,
-    addObject,
-    removeObject,
-    removeLastObject,
-    setActiveObject,
-    updateObject,
-    canAddObject: state.objects.length < state.maxObjectsCount,
-  }), [activeObject, addObject, removeLastObject, removeObject, setActiveObject, state, updateObject]);
+  const value = useMemo(
+    () => ({
+      ...state,
+      activeObject,
+      setActiveObject,
+    }),
+    [activeObject, setActiveObject, state],
+  );
 
   return (
     <ObjectsContext.Provider value={value}>

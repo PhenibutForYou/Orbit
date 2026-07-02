@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="Обновление">
-  <g fill="none" stroke="#1da1ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M21 12a9 9 0 0 1-15.36 6.36"/>
-    <path d="M3 12A9 9 0 0 1 18.36 5.64"/>
-    <path d="M21 5v5h-5"/>
-    <path d="M3 19v-5h5"/>
-  </g>
-</svg>
