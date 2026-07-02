@@ -12,6 +12,8 @@ for obj in data:
         obj['Fuel'] = random.randint(0, 100)
     if 'charge' in obj:
         obj['charge'] = random.randint(0, 100)
+    if 'start' in obj:
+        obj['coordinates'] = obj['start']
 
 # Записываем без BOM (стандартный UTF-8)
 with open('data.json', 'w', encoding='utf-8') as f:

@@ -151,6 +151,8 @@ def recovery(data):
                     i['Fuel'] = 100
                 elif i['type'] == "drn":
                     i['charge'] = 100
+                elif i['type'] == "gas":
+                    i['fuel_level'] = 100
 
 #Главная функция
 def main_function():
