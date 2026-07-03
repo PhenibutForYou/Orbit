@@ -52,7 +52,7 @@ async def notify_car(obj_id,car_name,fuel_level,temperature,speed,car_latitude,c
            f"#<code><i>{obj_id}</i></code>\n"
            f"🚙 <b>Автомобиль:</b> <u><b><i>{car_name}</i></b></u>\n"
            f"Прошлый статус: <b>{old_status}</b>\n"
-           f"Новый статус: <b>{new_status}</b>\n\n"
+           f"Текущий статус: <b>{new_status}</b>\n\n"
            f"📊 <b>Характеристики автомобиля:</b> \n"
            f"• Уровень топлива: <code>{fuel_level}%</code>\n"
            f"• Температура автомобиля: <code>{temperature}°C</code>\n"
@@ -73,7 +73,7 @@ async def notify_gas_station(obj_id,name,latitude,longitude,fuel_level,fuel_type
             f"#<code><i>{obj_id}</i></code>\n"
             f"⛽ <b>Автомобильная заправочная станция:</b> <u><b><i>{name}</i></b></u>\n"
             f"Прошлый статус: <b>{old_status}</b>\n"
-            f"Новый статус: <b>{new_status}</b>\n\n"
+            f"Текущий статус: <b>{new_status}</b>\n\n"
             f"📊 <b>Характеристики Автомобильной заправочной станции:</b>\n"
             f"• Местоположение: <code>{latitude}, {longitude}</code>\n"
             f"• Заполненность резервуаров: <code>{fuel_level}%</code>\n"
@@ -92,7 +92,7 @@ async def notify_ware_house(obj_id,name,latitude,longitude,workload,temperature,
             f"#<code><i>{obj_id}</i></code>\n"
             f"📦 <b>Склад:</b> <u><b><i>{name}</i></b></u>\n"
             f"Прошлый статус: <b>{old_status}</b>\n"
-            f"Новый статус: <b>{new_status}</b>\n\n"
+            f"Текущий статус: <b>{new_status}</b>\n\n"
             f"📊 <b>Характеристики склада:</b>\n"
             f"• Местоположение: <code>{latitude}, {longitude}</code>\n"
             f"• Загруженность: <code>{workload}%</code>\n"
@@ -111,7 +111,7 @@ async def notify_drone(obj_id, name, drone_latitude, drone_longitude,charge,alti
             f"#<code><i>{obj_id}</i></code>\n"
             f"🛰️ <b>Дрон:</b> <u><b><i>{name}</i></b></u>\n"
             f"Прошлый статус: <b>{old_status}</b>\n"
-            f"Новый статус: <b>{new_status}</b>\n\n"
+            f"Текущий статус: <b>{new_status}</b>\n\n"
             f"📊 <b>Характеристики дрона:</b>\n"
             f"• Местоположение: <code>{drone_latitude}, {drone_longitude}</code>\n"
             f"• Заряд: <code>{charge}%</code>\n"
@@ -122,6 +122,24 @@ async def notify_drone(obj_id, name, drone_latitude, drone_longitude,charge,alti
             f"• Пункт отправления:  <code>{start_latitude}, {start_longitude}</code>\n"
             f"• Пункт назначения: <code>{end_latitude}, {end_longitude}</code>\n\n"
             f"🕛 Время обновления: {date}"
+          )
+    for sub in chat_id:
+        asyncio.create_task(bot.send_message(chat_id=sub, text=msg, parse_mode="HTML"))
+
+#Уведомление для таймаута
+async def notify_timeout(obj_id, name, obj_type):
+    chat_id = load_subs()
+    types = {
+        "Дрон": "🛰️",
+        "Машина": "🚙",
+        "АЗС": "⛽",
+        "Склад": "📦"
+        }
+    emoji = types.get(obj_type, "⚠️")
+    msg = (
+            f"#<code><i>{obj_id}</i></code>\n"
+            f"{obj_type}: {emoji}<u><b><i>{name}</i></b></u>\n"
+            f"Данные давно не обновлялись"
           )
     for sub in chat_id:
         asyncio.create_task(bot.send_message(chat_id=sub, text=msg, parse_mode="HTML"))
@@ -205,6 +223,16 @@ async def handle_drone(request):
     )
     return web.json_response({"status": "ok"})
 
+#Таймаут
+async def handle_timeout(request):
+    data = await request.json()
+    await notify_timeout(
+        obj_id=data.get("obj_id"),
+        name=data.get("name"),
+        obj_type=data.get("obj_type"),
+    )
+    return web.json_response({"status": "ok"})
+
 #HTTP сервер
 async def http_server():
     app = web.Application()
@@ -212,6 +240,7 @@ async def http_server():
     app.router.add_post('/notify/gas_station', handle_gas_station)
     app.router.add_post('/notify/warehouse', handle_warehouse)
     app.router.add_post('/notify/drone', handle_drone)
+    app.router.add_post('./notify/timeout', handle_timeout)
 
     runner = web.AppRunner(app)
     await runner.setup()
