@@ -2,14 +2,14 @@
   {
     "id": 1,
     "type": "car",
-    "Fuel": 33,
-    "temperature": 17,
-    "Speed": 51,
+    "Fuel": 28,
+    "temperature": 110,
+    "Speed": 75,
     "coordinates": [
-      -70,
-      -60
+      -69.40244,
+      -58.96848
     ],
-    "chance": 0,
+    "chance": 21,
     "start": [
       -70,
       -60
@@ -21,20 +21,29 @@
     "accident": false,
     "recovery": 2,
     "timeOfAc": 0,
-    "name": "РўР°Р№РѕС‚Р° РљРѕСЂРѕР»Р°",
-    "description": "Р‘РѕР»РµРµ РјРµРЅРµРµ РЅРѕСЂРј РјР°С€РёРЅР°"
+    "name": "Тайота Корола",
+    "description": "Более менее норм машина",
+    "ctrl1": [
+      -61.92589876648326,
+      -45.80867366132509
+    ],
+    "ctrl2": [
+      -50.2592320998166,
+      -35.80867366132509
+    ],
+    "progress": 0.024404676504598818
   },
   {
     "id": 2,
     "type": "car",
-    "Fuel": 37,
-    "temperature": 90,
+    "Fuel": 99,
+    "temperature": 96,
     "Speed": 60,
     "coordinates": [
-      -35,
-      -30
+      -34.59999,
+      -29.44228
     ],
-    "chance": 36,
+    "chance": 14,
     "start": [
       -35,
       -30
@@ -45,19 +54,28 @@
     ],
     "accident": false,
     "recovery": 2,
-    "timeOfAc": 0,
-    "name": "Р›Р°РґР° РЎРµРґР°РЅ",
-    "description": "Р“РѕРІРЅРѕ РєР°РєРѕРµ С‚Рѕ РјР°С€РёРЅР°"
+    "timeOfAc": 1,
+    "name": "Лада Седан",
+    "description": "Говно какое то машина",
+    "ctrl1": [
+      -25.81615894854521,
+      -17.10337011558615
+    ],
+    "ctrl2": [
+      -14.14949228187854,
+      -7.103370115586148
+    ],
+    "progress": 0.014462030521243743
   },
   {
     "id": 3,
     "type": "car",
-    "Fuel": 91,
-    "temperature": 110,
+    "Fuel": 99,
+    "temperature": 94,
     "Speed": 60,
     "coordinates": [
-      0,
-      0
+      0.67244,
+      0.14597
     ],
     "chance": 11,
     "start": [
@@ -70,21 +88,30 @@
     ],
     "accident": false,
     "recovery": 2,
-    "timeOfAc": 0,
-    "name": "Р›Р°РјР±Р°",
-    "description": "РљСЂСѓС‚Р°СЏ РјР°С€РёРЅР°"
+    "timeOfAc": 1,
+    "name": "Ламба",
+    "description": "Крутая машина",
+    "ctrl1": [
+      17.13500286173031,
+      3.620274439092414
+    ],
+    "ctrl2": [
+      28.801669528396978,
+      13.620274439092414
+    ],
+    "progress": 0.013136344390129734
   },
   {
     "id": 4,
     "type": "car",
-    "Fuel": 18,
-    "temperature": 90,
-    "Speed": 60,
+    "Fuel": 5,
+    "temperature": 95,
+    "Speed": 63,
     "coordinates": [
-      35,
-      30
+      35.37599,
+      31.19183
     ],
-    "chance": 6,
+    "chance": 24,
     "start": [
       35,
       30
@@ -96,20 +123,29 @@
     "accident": false,
     "recovery": 2,
     "timeOfAc": 0,
-    "name": "Р¤РµСЂР°",
-    "description": "Р•С‰С‘ РєСЂСѓС‚Р°СЏ РјР°С€РёРЅР°"
+    "name": "Фера",
+    "description": "Ещё крутая машина",
+    "ctrl1": [
+      40.298164951251955,
+      47.42991866798383
+    ],
+    "ctrl2": [
+      51.96483161791862,
+      57.42991866798383
+    ],
+    "progress": 0.023018731912979623
   },
   {
     "id": 5,
     "type": "car",
-    "Fuel": 80,
-    "temperature": 50,
-    "Speed": 2,
+    "Fuel": 73,
+    "temperature": 110,
+    "Speed": 66,
     "coordinates": [
-      70,
-      60
+      68.89087,
+      59.73178
     ],
-    "chance": 0,
+    "chance": 18,
     "start": [
       70,
       60
@@ -121,20 +157,29 @@
     "accident": false,
     "recovery": 2,
     "timeOfAc": 0,
-    "name": "Р’РѕР»СЊС†РІР°РіРµРЅ РџРѕР»Рѕ",
-    "description": "РЎСЂРµРґРЅСЏСЏ РјР°С€РёРЅР° РјР°С€РёРЅР°"
+    "name": "Вольцваген Поло",
+    "description": "Средняя машина машина",
+    "ctrl1": [
+      2.8333466671289287,
+      43.916651110571806
+    ],
+    "ctrl2": [
+      -43.833319999537736,
+      3.9166511105718094
+    ],
+    "progress": 0.005513649136224177
   },
   {
     "id": 6,
     "type": "car",
-    "Fuel": 93,
-    "temperature": 90,
-    "Speed": 60,
+    "Fuel": 0,
+    "temperature": 0,
+    "Speed": 0,
     "coordinates": [
-      -70,
-      -60
+      -69.76005,
+      -59.17445
     ],
-    "chance": 11,
+    "chance": 4,
     "start": [
       -70,
       -60
@@ -143,23 +188,32 @@
       0,
       0
     ],
-    "accident": false,
+    "accident": true,
     "recovery": 1,
-    "timeOfAc": 0,
-    "name": "Р РµРЅРѕ Р›РѕРіР°РЅ",
-    "description": "Р•С‰С‘ РѕРґРЅР° СЃСЂРµРґРЅСЏСЏ РјР°С€РёРЅР°"
+    "timeOfAc": 4,
+    "name": "Рено Логан",
+    "description": "Ещё одна средняя машина",
+    "ctrl1": [
+      -59.853362195557565,
+      -24.61552188296063
+    ],
+    "ctrl2": [
+      -36.52002886222422,
+      -4.615521882960628
+    ],
+    "progress": 0.007803470635421103
   },
   {
     "id": 7,
     "type": "car",
-    "Fuel": 4,
-    "temperature": 90,
-    "Speed": 60,
+    "Fuel": 97,
+    "temperature": 22,
+    "Speed": 17,
     "coordinates": [
-      -35,
-      -30
+      -34.77045,
+      -29.22207
     ],
-    "chance": 10,
+    "chance": 0,
     "start": [
       -35,
       -30
@@ -168,23 +222,32 @@
       35,
       30
     ],
-    "accident": false,
+    "accident": true,
     "recovery": 2,
-    "timeOfAc": 0,
-    "name": "Р”РѕРґР¶",
-    "description": "РћРїСЏС‚СЊ РєСЂСѓС‚Р°СЏ РјР°С€РёРЅР°"
+    "timeOfAc": 1,
+    "name": "Додж",
+    "description": "Опять крутая машина",
+    "ctrl1": [
+      -24.730650728523926,
+      5.241314738833466
+    ],
+    "ctrl2": [
+      -1.3973173951905942,
+      25.241314738833466
+    ],
+    "progress": 0.007381661411884828
   },
   {
     "id": 8,
     "type": "car",
-    "Fuel": 82,
-    "temperature": 68,
-    "Speed": 30,
+    "Fuel": 73,
+    "temperature": 90,
+    "Speed": 110,
     "coordinates": [
-      0,
-      0
+      0.63523,
+      1.32049
     ],
-    "chance": 0,
+    "chance": 25,
     "start": [
       0,
       0
@@ -196,20 +259,29 @@
     "accident": false,
     "recovery": 2,
     "timeOfAc": 0,
-    "name": "РЎРёС‚СЂРѕРµРЅ",
-    "description": "РЎСЂРµРґРЅСЏСЏ РјР°С€РёРЅР°"
+    "name": "Ситроен",
+    "description": "Средняя машина",
+    "ctrl1": [
+      14.4206507751546,
+      30.39812965120852
+    ],
+    "ctrl2": [
+      37.753984108487934,
+      50.39812965120852
+    ],
+    "progress": 0.014552418212001518
   },
   {
     "id": 9,
     "type": "car",
-    "Fuel": 72,
-    "temperature": 90,
-    "Speed": 60,
+    "Fuel": 97,
+    "temperature": 15,
+    "Speed": 43,
     "coordinates": [
-      35,
-      30
+      34.73918,
+      29.42929
     ],
-    "chance": 21,
+    "chance": 0,
     "start": [
       35,
       30
@@ -218,23 +290,32 @@
       -70,
       -60
     ],
-    "accident": false,
+    "accident": true,
     "recovery": 2,
-    "timeOfAc": 0,
-    "name": "Р“Р°Р·РµР»СЊ",
-    "description": "Р§РёСЃС‚Рѕ РіСЂСѓР·РѕРІР°СЏ РјР°С€РёРЅР° РјР°С€РёРЅР°"
+    "timeOfAc": 1,
+    "name": "Газель",
+    "description": "Чисто грузовая машина машина",
+    "ctrl1": [
+      13.943293989006303,
+      -16.267176320507353
+    ],
+    "ctrl2": [
+      -21.056706010993697,
+      -46.26717632050735
+    ],
+    "progress": 0.0041176614678541225
   },
   {
     "id": 10,
     "type": "car",
-    "Fuel": 51,
-    "temperature": 90,
+    "Fuel": 47,
+    "temperature": 106,
     "Speed": 60,
     "coordinates": [
-      70,
-      60
+      69.04423,
+      59.48885
     ],
-    "chance": 4,
+    "chance": 26,
     "start": [
       70,
       60
@@ -246,8 +327,17 @@
     "accident": false,
     "recovery": 2,
     "timeOfAc": 0,
-    "name": "РњРµСЂСЃ",
-    "description": "РўРёРїР° РЅСѓ РїСЂРѕСЃС‚Рѕ РјР°С€РёРЅР°"
+    "name": "Мерс",
+    "description": "Типа ну просто машина",
+    "ctrl1": [
+      28.31827388807411,
+      37.795347130580204
+    ],
+    "ctrl2": [
+      -6.68172611192589,
+      7.795347130580205
+    ],
+    "progress": 0.007652824484158149
   },
   {
     "id": 11,
@@ -256,16 +346,16 @@
       -70,
       60
     ],
-    "fuel_level": 7,
+    "fuel_level": 99,
     "fuel_type": "AI-95",
-    "price": 84,
+    "price": 82,
     "occupancy": 0,
-    "chance": 13,
+    "chance": 18,
     "accident": false,
     "recovery": 2,
-    "timeOfAc": 0,
-    "name": "Р РѕСЃРЅРµС„С‚СЊ",
-    "description": "РџРµСЂРІР°СЏ Р·Р°РїСЂР°РІРєР°"
+    "timeOfAc": 1,
+    "name": "Роснефть",
+    "description": "Первая заправка"
   },
   {
     "id": 12,
@@ -274,16 +364,16 @@
       -35,
       30
     ],
-    "fuel_level": 0,
+    "fuel_level": 100,
     "fuel_type": "AI-92",
-    "price": 81,
-    "occupancy": 84,
-    "chance": 20,
+    "price": 84,
+    "occupancy": 83,
+    "chance": 13,
     "accident": false,
     "recovery": 2,
-    "timeOfAc": 0,
-    "name": "Р“Р°Р·РїСЂРѕРј",
-    "description": "Р’С‚РѕСЂР°СЏ Р·Р°РїСЂР°РІРєР°"
+    "timeOfAc": 2,
+    "name": "Газпром",
+    "description": "Вторая заправка"
   },
   {
     "id": 13,
@@ -292,16 +382,16 @@
       0,
       -30
     ],
-    "fuel_level": 12,
+    "fuel_level": 9,
     "fuel_type": "DT",
-    "price": 85,
-    "occupancy": 0,
-    "chance": 8,
+    "price": 77,
+    "occupancy": 2,
+    "chance": 28,
     "accident": false,
     "recovery": 2,
     "timeOfAc": 0,
-    "name": "РўР°С‚РЅРµС„С‚СЊ",
-    "description": "РўСЂРµС‚СЊСЏ Р·Р°РїСЂР°РІРєР°"
+    "name": "Татнефть",
+    "description": "Третья заправка"
   },
   {
     "id": 14,
@@ -310,16 +400,16 @@
       35,
       -60
     ],
-    "fuel_level": 0,
+    "fuel_level": 100,
     "fuel_type": "AI-98",
-    "price": 84,
-    "occupancy": 70,
-    "chance": 39,
+    "price": 85,
+    "occupancy": 80,
+    "chance": 13,
     "accident": false,
     "recovery": 2,
-    "timeOfAc": 0,
-    "name": "Р‘РµР»РѕРёР»",
-    "description": "Р§РµС‚РІС‘СЂС‚Р°СЏ Р·Р°РїСЂР°РІРєР°"
+    "timeOfAc": 2,
+    "name": "Белоил",
+    "description": "Четвёртая заправка"
   },
   {
     "id": 15,
@@ -328,16 +418,16 @@
       70,
       0
     ],
-    "fuel_level": 92,
+    "fuel_level": 87,
     "fuel_type": "AI-92",
-    "price": 92,
-    "occupancy": 90,
-    "chance": 0,
-    "accident": false,
+    "price": 84,
+    "occupancy": 85,
+    "chance": 2,
+    "accident": true,
     "recovery": 1,
-    "timeOfAc": 0,
-    "name": "Р›СѓРєРѕРёР»",
-    "description": "РџСЏС‚Р°СЏ Р·Р°РїСЂР°РІРєР°"
+    "timeOfAc": 4,
+    "name": "Лукоил",
+    "description": "Пятая заправка"
   },
   {
     "id": 16,
@@ -346,16 +436,16 @@
       -70,
       -60
     ],
-    "goods_load": 85,
-    "temperature": 10,
-    "humidity": 30,
+    "goods_load": 78,
+    "temperature": 17,
+    "humidity": 33,
     "trucks_loading": 3,
-    "chance": 2,
+    "chance": 11,
     "accident": false,
     "recovery": 2,
-    "timeOfAc": 0,
-    "name": "РћР·РѕРЅ",
-    "description": "РќСѓ С‚РёРїР° РѕР·РѕРЅ С‡Рѕ С…РѕС‡РµС€СЊ"
+    "timeOfAc": 2,
+    "name": "Озон",
+    "description": "Ну типа озон чо хочешь"
   },
   {
     "id": 17,
@@ -366,14 +456,14 @@
     ],
     "goods_load": 0,
     "temperature": 10,
-    "humidity": 39,
+    "humidity": 34,
     "trucks_loading": 3,
-    "chance": 12,
+    "chance": 8,
     "accident": false,
     "recovery": 2,
-    "timeOfAc": 0,
-    "name": "Р’Р‘",
-    "description": "РќСѓ С‚РёРїР° С‡Рѕ С‚Рѕ РѕР±С‹С‡РЅС‹Р№ РІР±"
+    "timeOfAc": 2,
+    "name": "ВБ",
+    "description": "Ну типа чо то обычный вб"
   },
   {
     "id": 18,
@@ -382,16 +472,16 @@
       0,
       0
     ],
-    "goods_load": 83,
-    "temperature": 11,
-    "humidity": 68,
-    "trucks_loading": 48,
-    "chance": 13,
+    "goods_load": 78,
+    "temperature": 16,
+    "humidity": 61,
+    "trucks_loading": 46,
+    "chance": 35,
     "accident": false,
     "recovery": 2,
     "timeOfAc": 0,
-    "name": "РЇРЅРґРµРєСЃ РњР°СЂРєРµС‚",
-    "description": "РќСѓ СЏРЅРґРµРєСЃ РђРґРµР»СЊ Р±СѓРґРµС‚ СЂР°Рґ"
+    "name": "Яндекс Маркет",
+    "description": "Ну яндекс Адель будет рад"
   },
   {
     "id": 19,
@@ -400,16 +490,16 @@
       35,
       30
     ],
-    "goods_load": 85,
-    "temperature": 12,
-    "humidity": 65,
+    "goods_load": 79,
+    "temperature": 13,
+    "humidity": 60,
     "trucks_loading": 3,
-    "chance": 13,
+    "chance": 14,
     "accident": false,
     "recovery": 1,
-    "timeOfAc": 0,
-    "name": "РђР»РёСЌРєСЃРїСЂРµСЃСЃ",
-    "description": "РћРїСЏС‚СЊ РєРёС‚Р°Р№"
+    "timeOfAc": 2,
+    "name": "Алиэкспресс",
+    "description": "Опять китай"
   },
   {
     "id": 20,
@@ -418,28 +508,28 @@
       70,
       60
     ],
-    "goods_load": 3,
+    "goods_load": 0,
     "temperature": 10,
-    "humidity": 30,
+    "humidity": 38,
     "trucks_loading": 3,
-    "chance": 5,
-    "accident": false,
+    "chance": 8,
+    "accident": true,
     "recovery": 2,
-    "timeOfAc": 0,
-    "name": "РЎРІРµС‚РѕС„РѕСЂ",
-    "description": "Р”Р°Р»СЊС€Рµ Р±РѕРіР° РЅРµС‚"
+    "timeOfAc": 3,
+    "name": "Светофор",
+    "description": "Дальше бога нет"
   },
   {
     "id": 21,
     "type": "drn",
     "coordinates": [
-      -70,
-      -60
+      -68.97689,
+      -59.7296
     ],
-    "charge": 85,
-    "propeller_rpm": 3000,
-    "speed": 60,
-    "altitude": 10,
+    "charge": 0,
+    "propeller_rpm": 0,
+    "speed": 0,
+    "altitude": 0,
     "start": [
       -70,
       -60
@@ -448,24 +538,33 @@
       -35,
       -30
     ],
-    "chance": 4,
-    "accident": false,
+    "chance": 6,
+    "accident": true,
     "recovery": 2,
-    "timeOfAc": 0,
-    "name": "Р”СЂРѕРЅ1",
-    "description": "РљР°РєРѕР№ РµС‰С‘ РґСЂРѕРЅ РЅРµ РїРѕРЅ"
+    "timeOfAc": 3,
+    "name": "Дрон1",
+    "description": "Какой ещё дрон не пон",
+    "ctrl1": [
+      -53.39776017952993,
+      -55.758168679437304
+    ],
+    "ctrl2": [
+      -41.73109351286327,
+      -45.758168679437304
+    ],
+    "progress": 0.020668651953277516
   },
   {
     "id": 22,
     "type": "drn",
     "coordinates": [
-      -35,
-      -30
+      -34.58072,
+      -29.4605
     ],
-    "charge": 60,
-    "propeller_rpm": 3000,
-    "speed": 60,
-    "altitude": 10,
+    "charge": 0,
+    "propeller_rpm": 0,
+    "speed": 0,
+    "altitude": 0,
     "start": [
       -35,
       -30
@@ -474,24 +573,33 @@
       0,
       0
     ],
-    "chance": 13,
-    "accident": false,
+    "chance": 8,
+    "accident": true,
     "recovery": 2,
-    "timeOfAc": 0,
-    "name": "Р”СЂРѕРЅ2",
-    "description": "Р•С‰С‘ РѕРґРёРЅ РґСЂРѕРЅ"
+    "timeOfAc": 3,
+    "name": "Дрон2",
+    "description": "Ещё один дрон",
+    "ctrl1": [
+      -25.406324818191262,
+      -17.581509934332416
+    ],
+    "ctrl2": [
+      -13.739658151524596,
+      -7.581509934332418
+    ],
+    "progress": 0.014522288981748923
   },
   {
     "id": 23,
     "type": "drn",
     "coordinates": [
-      0,
-      0
+      0.50689,
+      0.90681
     ],
-    "charge": 59,
-    "propeller_rpm": 96,
-    "speed": 9,
-    "altitude": 9,
+    "charge": 52,
+    "propeller_rpm": 42,
+    "speed": 6,
+    "altitude": 8,
     "start": [
       0,
       0
@@ -501,20 +609,29 @@
       30
     ],
     "chance": 0,
-    "accident": false,
+    "accident": true,
     "recovery": 1,
-    "timeOfAc": 0,
+    "timeOfAc": 1,
     "name": "FPV",
-    "description": "РћС… С‘РјР°С‘"
+    "description": "Ох ёмаё",
+    "ctrl1": [
+      7.908996562706383,
+      14.383948454620331
+    ],
+    "ctrl2": [
+      19.57566322937305,
+      24.38394845462033
+    ],
+    "progress": 0.021150719637318974
   },
   {
     "id": 24,
     "type": "drn",
     "coordinates": [
-      35,
-      30
+      35.54563,
+      30.16587
     ],
-    "charge": 71,
+    "charge": 99,
     "propeller_rpm": 3000,
     "speed": 60,
     "altitude": 10,
@@ -526,21 +643,30 @@
       70,
       60
     ],
-    "chance": 38,
+    "chance": 13,
     "accident": false,
     "recovery": 2,
-    "timeOfAc": 0,
-    "name": "Р‘Р°Р±Р° СЏРіР°",
-    "description": "Р§Рѕ Р·Р° РіРѕРІРЅРѕ РЅРµ РїРѕРЅ"
+    "timeOfAc": 1,
+    "name": "Баба яга",
+    "description": "Чо за говно не пон",
+    "ctrl1": [
+      51.10498310555598,
+      34.821964154629136
+    ],
+    "ctrl2": [
+      62.771649772222645,
+      44.821964154629136
+    ],
+    "progress": 0.011328590574974266
   },
   {
     "id": 25,
     "type": "drn",
     "coordinates": [
-      70,
-      60
+      69.67913,
+      59.96886
     ],
-    "charge": 21,
+    "charge": 100,
     "propeller_rpm": 3000,
     "speed": 60,
     "altitude": 10,
@@ -552,11 +678,20 @@
       -70,
       -60
     ],
-    "chance": 42,
+    "chance": 3,
     "accident": false,
     "recovery": 3,
-    "timeOfAc": 0,
-    "name": "Р”СЂРѕРЅ3",
-    "description": "РџСЂРѕСЃС‚Рѕ РїРѕРЅ"
+    "timeOfAc": 1,
+    "name": "Дрон3",
+    "description": "Просто пон",
+    "ctrl1": [
+      -4.776717148005641,
+      52.795058894895476
+    ],
+    "ctrl2": [
+      -51.4433838146723,
+      12.795058894895476
+    ],
+    "progress": 0.001431138436998079
   }
 ]
