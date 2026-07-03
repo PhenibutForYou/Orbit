@@ -11,10 +11,10 @@ countOfFrame = 0
 #Расчитывает вероятность попадения в аварию
 def accident_probability(data):
         if random.randint(1, 100) > data['chance']:
-            data['chance'] = min(100, data['chance'] + random.randint(1, 3))
+            data['chance'] = min(100, data['chance'] + random.randint(2, 5))
             return 0
         else:
-            data['chance'] = max(0, data['chance'] - 80)
+            data['chance'] = max(0, data['chance'] - 50)
             return 1
 
 #Изменяет значение элемента в зависимости от minVal, maxVal, результатов расчёта аварии и интервала изменения данных
