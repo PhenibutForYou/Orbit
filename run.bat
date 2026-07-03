@@ -1,0 +1,6 @@
+start "Backend App" cmd /k "cd backend && python app.py"
+start "Bridge"     cmd /k "cd backend && python bridge.py"
+start "Bot"        cmd /k "cd backend/bot && python BotMain.py"
+start "Emulator"   cmd /k "cd backend/emulator && python reset.py"
+start "Emulator"   cmd /k "cd backend/emulator && python main.py"
+start "Frontend"   cmd /k "cd frontend && npm run dev"

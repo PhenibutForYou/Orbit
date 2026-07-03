@@ -2,6 +2,8 @@ import threading
 import requests
 import queue
 import json
+import time
+import os
 from flask import Flask, request, jsonify, Response
 from pydantic import ValidationError
 from models import db, Car, GasStation, Warehouse, Drone
@@ -16,14 +18,14 @@ telemetry_data = {
     "drones": {}
 }
 
+# Словарь для отслеживания времени онлайна
+last_seen_tracker = {}
+
 app = Flask(__name__)
 CORS(app)
 
 # Пока что тестовая бдшка
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///telemetry.db'
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user:pass@localhost:5432/telemetry_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///telemetry.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Инициализация бд
@@ -45,6 +47,44 @@ status_translated = {
 
 # Список подключенных вкладок фронтенда
 sse_clients = []
+
+# Множество для объектов, по котором таймаут отправлен
+notified_timeouts = set()
+
+# Время в секундах, после которого объект считается оффлайн
+timeout_threshold = 15
+
+# Фоновая функция для проверки зависших объектов
+def check_telemetry_timeouts():
+    while True:
+        current_time = time.time()
+        
+        for timeout_key, info in list(last_seen_tracker.items()):
+            last_seen = info["last_seen"]
+            obj_name = info["name"]
+            obj_type = info["type"]
+            
+            parts = timeout_key.split("_", 1)
+            obj_id = parts[1] if len(parts) > 1 else timeout_key
+            
+            if current_time - last_seen > timeout_threshold:
+                if timeout_key not in notified_timeouts:
+                    try:
+                        payload = {
+                            "obj_id": str(obj_id),
+                            "name": obj_name,
+                            "obj_type": obj_type
+                        }
+                        res = requests.post(f"{bot_url}/timeout", json=payload, timeout=5)
+                        if res.status_code == 200:
+                            notified_timeouts.add(timeout_key)
+                    except Exception as e:
+                        print(f"Не удалось отправить таймаут боту: {e}")
+            else:
+                if timeout_key in notified_timeouts:
+                    notified_timeouts.remove(timeout_key)
+
+        time.sleep(5)
 
 # Перевод статуса системы к тому который у фронта
 def map_status(status):
@@ -235,6 +275,12 @@ def receive_car():
 
     telemetry_data["cars"][data.id] = data
 
+    last_seen_tracker[f"cars_{data.id}"] = {
+        "last_seen": time.time(),
+        "name": data.name,
+        "type": "Машина"
+    }
+
     db.session.commit() # Сохранение в бд
     
     # Вызов функции для отправки события
@@ -287,6 +333,11 @@ def receive_gas_station():
     station.status = new_status
 
     telemetry_data["gas_stations"][data.id] = data
+    last_seen_tracker[f"gas_stations_{data.id}"] = {
+        "last_seen": time.time(),
+        "name": data.name,
+        "type": "АЗС"
+    }
 
     db.session.commit()
 
@@ -339,6 +390,11 @@ def receive_warehouse():
     warehouse.status = new_status
 
     telemetry_data["warehouses"][data.id] = data
+    last_seen_tracker[f"warehouses_{data.id}"] = {
+        "last_seen": time.time(),
+        "name": data.name,
+        "type": "Склад"
+    }
 
     db.session.commit()
 
@@ -399,6 +455,11 @@ def receive_drone():
     drone.status = new_status
 
     telemetry_data["drones"][data.id] = data
+    last_seen_tracker[f"drones_{data.id}"] = {
+        "last_seen": time.time(),
+        "name": data.name,
+        "type": "Дрон"
+    }
 
     db.session.commit()
 
@@ -443,4 +504,8 @@ def events_stream():
     return Response(event_generator(), mimetype='text/event-stream')
 
 if __name__ == '__main__':
+    if os.environ.get("WERKZEUG_RUN_MAIN") == "true" or not app.debug:
+        timeout_thread = threading.Thread(target=check_telemetry_timeouts, daemon=True)
+        timeout_thread.start()
+
     app.run(debug=True, port=5000)
