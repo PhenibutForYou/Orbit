@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
-      POSTGRES_DB: theatre_db
+      POSTGRES_DB: orbitsys_db
     ports:
       - "5432:5432"
     volumes:
