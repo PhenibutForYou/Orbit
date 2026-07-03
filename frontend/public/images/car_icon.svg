@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <title>Car icon</title>
+  <g stroke="#F5F7FA" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+    <!-- body -->
+    <path d="M82 296
+             C88 260 112 238 150 232
+             L185 178
+             C199 156 221 144 247 144
+             H310
+             C335 144 356 155 372 174
+             L420 232
+             C453 237 474 259 480 292
+             V337
+             C480 356 465 371 446 371
+             H418
+             C410 402 382 425 348 425
+             C314 425 286 402 278 371
+             H234
+             C226 402 198 425 164 425
+             C130 425 102 402 94 371
+             H72
+             C53 371 38 356 38 337
+             V318
+             C38 307 46 299 57 299
+             H82Z"/>
+
+    <!-- roof/windows line -->
+    <path d="M187 232 L227 173 H307 C326 173 342 181 354 195 L386 232"/>
+    <path d="M282 174 V232"/>
+
+    <!-- lights -->
+    <path d="M67 307 H103"/>
+    <path d="M434 306 H473"/>
+
+    <!-- wheels -->
+    <circle cx="164" cy="354" r="48"/>
+    <circle cx="164" cy="354" r="17"/>
+    <circle cx="348" cy="354" r="48"/>
+    <circle cx="348" cy="354" r="17"/>
+  </g>
+</svg>
