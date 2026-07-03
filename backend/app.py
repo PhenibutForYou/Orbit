@@ -20,7 +20,10 @@ app = Flask(__name__)
 CORS(app)
 
 # Пока что тестовая бдшка
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///telemetry.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///telemetry.db'
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user:pass@localhost:5432/telemetry_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Инициализация бд
