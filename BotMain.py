@@ -50,16 +50,17 @@ async def notify_car(obj_id,car_name,fuel_level,temperature,speed,car_latitude,
 car_longitude,start_latitude,start_longitude,end_latitude,end_longitude,status,date):
     chat_id =  load_subs()
     msg = (
-           f"🚙 <b>Автомобиль:</b> <i>{car_name}</i> идентификатор - <i>{obj_id}</i> изменил свой статус с нормального на <b>{status}</b>\n\n"
-           f"📊 <b>Характеристики автомобиля:</b> 📊 \n"
+           f"#<code><i>{obj_id}</i></code>"
+           f"🚙 <b>Автомобиль:</b> <u><b><i>{car_name}</i></b></u> изменил свой статус с нормального на <b>{status}</b>\n\n"
+           f"📊 <b>Характеристики автомобиля:</b> \n"
            f"• Уровень топлива: <code>{fuel_level}%</code>\n"
            f"• Температура автомобиля: <code>{temperature}°C</code>\n"
            f"• Скорость автомобиля: <code>{speed} км/ч</code>\n"
            f"• Местоположение автомобиля: <code>{car_latitude}, {car_longitude}</code>\n\n"
-           f"🗺️ <b>Маршрут:</b> 🗺️ \n"
+           f"🗺️ <b>Маршрут:</b>\n"
            f"• Пункт отправления: <code>{start_latitude}, {start_longitude}</code>\n"
            f"• Пункт назначения: <code>{end_latitude}, {end_longitude}</code>\n"
-           f"🕛 Время обновления: {date} 🕛"
+           f"🕛 Время обновления: {date} "
            )
     for sub in chat_id:
         asyncio.create_task(bot.send_message(chat_id=sub, text=msg, parse_mode="HTML"))
@@ -68,14 +69,15 @@ car_longitude,start_latitude,start_longitude,end_latitude,end_longitude,status,d
 async def notify_gas_station(obj_id,name,latitude,longitude,fuel_level,fuel_type,price,workload,status, date):
     chat_id = load_subs()
     msg = (
-            f"⛽ <b>Автомобильная заправочная станция:</b> <i>{name}</i> идентификатор - <i>{obj_id}</i> изменил свой статус с нормального на <b>{status}</b>\n\n"
-            f"📊 <b>Характеристики Автомобильной заправочной станции:</b> 📊 \n"
+            f"#<code><i>{obj_id}</i></code>"
+            f"⛽ <b>Автомобильная заправочная станция:</b> <u><b><i>{name}</i></b></u> изменил свой статус с нормального на <b>{status}</b>\n\n"
+            f"📊 <b>Характеристики Автомобильной заправочной станции:</b>\n"
             f"• Местоположение: <code>{latitude}, {longitude}</code>\n"
             f"• Заполненность резервуаров: <code>{fuel_level}%</code>\n"
             f"• Вид топлива: <code>{fuel_type}</code>\n"
             f"• Цена за литр: <code>{price} руб</code>\n"
             f"• Загруженность: <code>{workload}%</code>\n\n"
-            f"🕛 Время обновления: {date} 🕛"
+            f"🕛 Время обновления: {date}"
           )
     for sub in chat_id:
         asyncio.create_task(bot.send_message(chat_id=sub, text=msg, parse_mode="HTML"))
@@ -84,14 +86,15 @@ async def notify_gas_station(obj_id,name,latitude,longitude,fuel_level,fuel_type
 async def notify_ware_house(obj_id,name,latitude,longitude,workload,temperature,humidity,quantity_of_truck,status,date):
     chat_id =  load_subs()
     msg = (
-            f"📦 <b>Склад:</b> <i>{name}</i> идентификатор - <i>{obj_id}</i> изменил свой статус с нормального на <b>{status}</b>\n\n"
-            f"📊 <b>Характеристики склада:</b>  📊\n"
+            f"#<code><i>{obj_id}</i></code>"
+            f"📦 <b>Склад:</b> <u><b><i>{name}</i></b></u> изменил свой статус с нормального на <b>{status}</b>\n\n"
+            f"📊 <b>Характеристики склада:</b>\n"
             f"• Местоположение: <code>{latitude}, {longitude}</code>\n"
             f"• Загруженность: <code>{workload}%</code>\n"
             f"• Температура: <code>{temperature}°C</code>\n"
             f"• Влажность: <code>{humidity} г/м³</code>\n"
             f"• Количество грузовиков: <code>{quantity_of_truck}</code>\n\n"
-            f"🕛 Время обновления: {date} 🕛"
+            f"🕛 Время обновления: {date}"
           )
     for sub in chat_id:
         asyncio.create_task(bot.send_message(chat_id=sub, text=msg, parse_mode="HTML"))
@@ -100,17 +103,18 @@ async def notify_ware_house(obj_id,name,latitude,longitude,workload,temperature,
 async def notify_drone(obj_id, name, drone_latitude, drone_longitude,charge,altitude,propeller_speed_pm,speed, start_latitude,start_longitude,end_latitude,end_longitude,status,date):
     chat_id =  load_subs()
     msg = (
-            f"🛰️ <b>Дрон:</b> <i>{name}</i> идентификатор - <i>{obj_id}</i> изменил свой статус с нормального на <b>{status}</b>\n\n"
-            f"📊 <b>Характеристики дрона:</b> 📊\n"
+            f"#<code><i>{obj_id}</i></code> "
+            f"🛰️ <b>Дрон:</b> <u><b><i>{name}</i></b></u> изменил свой статус с нормального на <b>{status}</b>\n\n"
+            f"📊 <b>Характеристики дрона:</b>\n"
             f"• Местоположение: <code>{drone_latitude}, {drone_longitude}</code>\n"
             f"• Заряд: <code>{charge}%</code>\n"
             f"• Высота: <code>{altitude} м</code>\n"
             f"• Количество оборотов в минуту: <code>{propeller_speed_pm}</code>\n"
             f"• Скорость: <code>{speed} км/ч</code>\n\n"
-            f"🗺️ <b>Маршрут:</b> 🗺️ \n"
+            f"🗺️ <b>Маршрут:</b> \n"
             f"• Пункт отправления:  <code>{start_latitude}, {start_longitude}</code>\n"
             f"• Пункт назначения: <code>{end_latitude}, {end_longitude}</code>\n\n"
-            f"🕛 Время обновления: {date} 🕛"
+            f"🕛 Время обновления: {date}"
           )
     for sub in chat_id:
         asyncio.create_task(bot.send_message(chat_id=sub, text=msg, parse_mode="HTML"))
