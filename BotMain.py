@@ -46,12 +46,13 @@ def remove_subs(chat_id):
     return False
 
 #Уведомление для машин
-async def notify_car(obj_id,car_name,fuel_level,temperature,speed,car_latitude,
-car_longitude,start_latitude,start_longitude,end_latitude,end_longitude,status,date):
-    chat_id =  load_subs()
+async def notify_car(obj_id,car_name,fuel_level,temperature,speed,car_latitude,car_longitude,start_latitude,start_longitude,end_latitude,end_longitude,old_status,new_status,date):
+    chat_id = load_subs()
     msg = (
-           f"#<code><i>{obj_id}</i></code>"
-           f"🚙 <b>Автомобиль:</b> <u><b><i>{car_name}</i></b></u> изменил свой статус с нормального на <b>{status}</b>\n\n"
+           f"#<code><i>{obj_id}</i></code>\n"
+           f"🚙 <b>Автомобиль:</b> <u><b><i>{car_name}</i></b></u>\n"
+           f"Прошлый статус: <b>{old_status}</b>\n"
+           f"Новый статус: <b>{new_status}</b>\n\n"
            f"📊 <b>Характеристики автомобиля:</b> \n"
            f"• Уровень топлива: <code>{fuel_level}%</code>\n"
            f"• Температура автомобиля: <code>{temperature}°C</code>\n"
@@ -66,11 +67,13 @@ car_longitude,start_latitude,start_longitude,end_latitude,end_longitude,status,d
         asyncio.create_task(bot.send_message(chat_id=sub, text=msg, parse_mode="HTML"))
 
 #Уведомление для АЗС
-async def notify_gas_station(obj_id,name,latitude,longitude,fuel_level,fuel_type,price,workload,status, date):
+async def notify_gas_station(obj_id,name,latitude,longitude,fuel_level,fuel_type,price,workload,old_status,new_status, date):
     chat_id = load_subs()
     msg = (
-            f"#<code><i>{obj_id}</i></code>"
-            f"⛽ <b>Автомобильная заправочная станция:</b> <u><b><i>{name}</i></b></u> изменил свой статус с нормального на <b>{status}</b>\n\n"
+            f"#<code><i>{obj_id}</i></code>\n"
+            f"⛽ <b>Автомобильная заправочная станция:</b> <u><b><i>{name}</i></b></u>\n"
+            f"Прошлый статус: <b>{old_status}</b>\n"
+            f"Новый статус: <b>{new_status}</b>\n\n"
             f"📊 <b>Характеристики Автомобильной заправочной станции:</b>\n"
             f"• Местоположение: <code>{latitude}, {longitude}</code>\n"
             f"• Заполненность резервуаров: <code>{fuel_level}%</code>\n"
@@ -83,11 +86,13 @@ async def notify_gas_station(obj_id,name,latitude,longitude,fuel_level,fuel_type
         asyncio.create_task(bot.send_message(chat_id=sub, text=msg, parse_mode="HTML"))
 
 #Уведомление для склада
-async def notify_ware_house(obj_id,name,latitude,longitude,workload,temperature,humidity,quantity_of_truck,status,date):
-    chat_id =  load_subs()
+async def notify_ware_house(obj_id,name,latitude,longitude,workload,temperature,humidity,quantity_of_truck,old_status,new_status,date):
+    chat_id = load_subs()
     msg = (
-            f"#<code><i>{obj_id}</i></code>"
-            f"📦 <b>Склад:</b> <u><b><i>{name}</i></b></u> изменил свой статус с нормального на <b>{status}</b>\n\n"
+            f"#<code><i>{obj_id}</i></code>\n"
+            f"📦 <b>Склад:</b> <u><b><i>{name}</i></b></u>\n"
+            f"Прошлый статус: <b>{old_status}</b>\n"
+            f"Новый статус: <b>{new_status}</b>\n\n"
             f"📊 <b>Характеристики склада:</b>\n"
             f"• Местоположение: <code>{latitude}, {longitude}</code>\n"
             f"• Загруженность: <code>{workload}%</code>\n"
@@ -100,11 +105,13 @@ async def notify_ware_house(obj_id,name,latitude,longitude,workload,temperature,
         asyncio.create_task(bot.send_message(chat_id=sub, text=msg, parse_mode="HTML"))
 
 #Уведомление для дрона
-async def notify_drone(obj_id, name, drone_latitude, drone_longitude,charge,altitude,propeller_speed_pm,speed, start_latitude,start_longitude,end_latitude,end_longitude,status,date):
-    chat_id =  load_subs()
+async def notify_drone(obj_id, name, drone_latitude, drone_longitude,charge,altitude,propeller_speed_pm,speed, start_latitude,start_longitude,end_latitude,end_longitude,old_status,new_status,date):
+    chat_id = load_subs()
     msg = (
-            f"#<code><i>{obj_id}</i></code> "
-            f"🛰️ <b>Дрон:</b> <u><b><i>{name}</i></b></u> изменил свой статус с нормального на <b>{status}</b>\n\n"
+            f"#<code><i>{obj_id}</i></code>\n"
+            f"🛰️ <b>Дрон:</b> <u><b><i>{name}</i></b></u>\n"
+            f"Прошлый статус: <b>{old_status}</b>\n"
+            f"Новый статус: <b>{new_status}</b>\n\n"
             f"📊 <b>Характеристики дрона:</b>\n"
             f"• Местоположение: <code>{drone_latitude}, {drone_longitude}</code>\n"
             f"• Заряд: <code>{charge}%</code>\n"
@@ -134,7 +141,8 @@ async def handle_car(request):
         start_longitude=data.get("start_longitude"),
         end_latitude=data.get("end_latitude"),
         end_longitude=data.get("end_longitude"),
-        status=data.get("status"),
+        old_status=data.get("old_status"),
+        new_status=data.get("new_status"),
         date=data.get("date")
     )
     return web.json_response({"status": "ok"})
@@ -151,7 +159,8 @@ async def handle_gas_station(request):
         fuel_type=data.get("fuel_type"),
         price=data.get("price"),
         workload=data.get("workload"),
-        status=data.get("status"),
+        old_status=data.get("old_status"),
+        new_status=data.get("new_status"),
         date=data.get("date")
     )
     return web.json_response({"status": "ok"})
@@ -168,7 +177,8 @@ async def handle_warehouse(request):
         temperature=data.get("temperature"),
         humidity=data.get("humidity"),
         quantity_of_truck=data.get("quantity_of_truck"),
-        status=data.get("status"),
+        old_status=data.get("old_status"),
+        new_status=data.get("new_status"),
         date=data.get("date")
     )
     return web.json_response({"status": "ok"})
@@ -189,7 +199,8 @@ async def handle_drone(request):
         start_longitude=data.get("start_longitude"),
         end_latitude=data.get("end_latitude"),
         end_longitude=data.get("end_longitude"),
-        status=data.get("status"),
+        old_status=data.get("old_status"),
+        new_status=data.get("new_status"),
         date=data.get("date")
     )
     return web.json_response({"status": "ok"})
