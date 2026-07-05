@@ -51,7 +51,7 @@ def change_coordinates(coord, endcoord, speed):
     global frame
     if speed is None:
         return coord
-    step = speed / 3600 * frame
+    step = speed / 3600 * frame * 50
     dx = endcoord[0] - coord[0]
     dy = endcoord[1] - coord[1]
     dist = sqrt(dx**2 + dy**2)
@@ -60,11 +60,52 @@ def change_coordinates(coord, endcoord, speed):
         coord[1] = round(endcoord[1], 5)
     else:
         # Округляем приращение и затем сумму
-        add_x = round(step * dx / dist * 20, 5)
-        add_y = round(step * dy / dist * 20, 5)
+        add_x = round(step * dx / dist, 5)
+        add_y = round(step * dy / dist, 5)
         coord[0] = round(coord[0] + add_x, 5)
         coord[1] = round(coord[1] + add_y, 5)
     return coord
+
+def point_on_map(x, y):
+    y_river = -0.9 * x - 40.0
+    if y_river <= y:
+        return True
+    return False
+
+def river_change_coordinates(coord, endcoord, speed):
+    if point_on_map(*coord) == point_on_map(*endcoord):
+        return change_coordinates(coord, endcoord, speed)
+    else:
+        dxForBridge1 = -62.0 - coord[0]
+        dyForBridge1 = 15.0 - coord[1]
+        dxForBridge2 = 18.0 - coord[0]
+        dyForBridge2 = -54.0 - coord[1]
+        if point_on_map(*coord):
+            # if coord == [14.0, -63.0] or coord == [-64.0, 8.5]:
+            #     return change_coordinates(coord, endcoord, speed)
+            if sqrt(dxForBridge1**2 + dyForBridge1**2) > sqrt(dxForBridge2**2 + dyForBridge2**2):
+                if coord == [20.0, -49.0]:
+                    return change_coordinates(coord, [14.0, -63.0], speed)
+                else:
+                    return change_coordinates(coord, [20.0, -49.0], speed)
+            else:
+                if coord == [-60.0, 20.0]:
+                    return change_coordinates(coord, [-64.0, 8.5], speed)
+                else:
+                    return change_coordinates(coord, [-60.0, 20.0], speed)
+        else:
+            # if coord == [20.0, -49.0] or coord == [-60.0, 20.0]:
+            #     return change_coordinates(coord, endcoord, speed)
+            if sqrt(dxForBridge1**2 + dyForBridge1**2) > sqrt(dxForBridge2**2 + dyForBridge2**2):
+                if coord == [14.0, -63.0]:
+                    return change_coordinates(coord, [20.0, -49.0], speed)
+                else:
+                    return change_coordinates(coord, [14.0, -63.0], speed)
+            else:
+                if coord == [-64.0, 8.5]:
+                    return change_coordinates(coord, [-60.0, 20.0], speed)
+                else:
+                    return change_coordinates(coord, [-64.0, 8.5], speed)
 
 #Функция, которая изменяет все данные
 def change_data(data):
@@ -77,7 +118,7 @@ def change_data(data):
             data['Fuel'] = minuend_value(data['Fuel'], 4)
             data['temperature'] = change_value(data['temperature'], 90, 110, 30, resultOfChanse)
             data['Speed'] = change_value(data['Speed'], 60, 110, 20, resultOfChanse)
-            data['coordinates'] = change_coordinates(data['coordinates'], data['end'], data['Speed'])
+            data['coordinates'] = river_change_coordinates(data['coordinates'], data['end'], data['Speed'])
             #Если топливо на нуле, то тоже авария
             if data['Fuel'] <= 0:
                 data['accident'] = True

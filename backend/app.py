@@ -24,7 +24,6 @@ last_seen_tracker = {}
 app = Flask(__name__)
 CORS(app)
 
-# Пока что тестовая бдшка
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///telemetry.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -139,12 +138,19 @@ def send_to_bot_background(endpoint, payload):
 # Сериализаторы к необходимому стандарту
 # Сериализатор машины
 def serialize_car(car):
+    # Статусы отдельных параметров
+    fuel_status = car.get_fuel_status() if hasattr(car, 'get_fuel_status') else "normal"
+    speed_status = car.get_speed_status() if hasattr(car, 'get_speed_status') else "normal"
+    engine_status = car.get_engine_status() if hasattr(car, 'get_engine_status') else "normal"
+    # Общий статус объекта
+    obj_status = car.calculate_status() if hasattr(car, 'calculate_status') else (car.status or "normal")
+
     return {
         "id": str(car.id),
         "type": "car",
         "name": car.name,
         "description": car.description,
-        "status": map_status(car.calculate_status()),
+        "status": map_status(obj_status),
         "coordinates": f"{car.latitude}, {car.longitude}",
         "updatedAt": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "static": [
@@ -152,59 +158,80 @@ def serialize_car(car):
             { "label": "Точка прибытия", "value": f"{car.end_lat}, {car.end_lon}" }
         ],
         "telemetry": [
-            format_telemetry_item("fuel", "Топливо", "%", car.fuel_level, status=car.calculate_status()),
-            format_telemetry_item("speed", "Скорость", "км/ч", car.speed, 0, 170, status=car.calculate_status()),
-            format_telemetry_item("engineTemp", "Мотор", "°C", car.engine_temp, 0, 200, status=car.calculate_status())
+            format_telemetry_item("fuel", "Топливо", "%", car.fuel_level, status=fuel_status),
+            format_telemetry_item("speed", "Скорость", "км/ч", car.speed, 0, 170, status=speed_status),
+            format_telemetry_item("engineTemp", "Мотор", "°C", car.engine_temp, 0, 200, status=engine_status)
         ]
     }
 
 # Сериализатор АЗС
 def serialize_gas_station(station):
+
+    fuel_status = station.get_fuel_status() if hasattr(station, 'get_fuel_status') else "normal"
+    occupancy_status = station.get_occupancy_status() if hasattr(station, 'get_occupancy_status') else "normal"
+    obj_status = station.calculate_status() if hasattr(station, 'calculate_status') else (station.status or "normal")
+
     return {
         "id": str(station.id),
         "type": "fuel-station",
         "name": station.name,
         "description": station.description,
-        "status": map_status(station.calculate_status()),
+        "status": map_status(obj_status),
         "coordinates": f"{station.latitude}, {station.longitude}",
         "updatedAt": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "static": [
             { "label": "Тип топлива", "value": station.fuel_type },
         ],
         "telemetry": [
-            format_telemetry_item("fuelLevel", "Запас топлива", "%", station.fuel_level, status=station.calculate_status()),
-            format_telemetry_item("occupancy", "Нагрузка АЗС", "%", station.occupancy, 0, 100, status=station.calculate_status()),
+            format_telemetry_item("fuelLevel", "Запас топлива", "%", station.fuel_level, status=fuel_status),
+            format_telemetry_item("occupancy", "Нагрузка АЗС", "%", station.occupancy, 0, 100, status=occupancy_status),
             format_telemetry_item("price", "Цена топлива", "₽", float(station.price), 0, 200)
         ]
     }
 
 # Сериализатор склада
 def serialize_warehouse(wh):
+
+    capacity_status = wh.get_capacity_status() if hasattr(wh, 'get_capacity_status') else "normal"
+    temp_status = wh.get_temperature_status() if hasattr(wh, 'get_temperature_status') else "normal"
+    hum_status = wh.get_humidity_status() if hasattr(wh, 'get_humidity_status') else "normal"
+    trucks_status = wh.get_trucks_status() if hasattr(wh, 'get_trucks_status') else "normal"
+    
+    obj_status = wh.calculate_status() if hasattr(wh, 'calculate_status') else (wh.status or "normal")
+
     return {
         "id": str(wh.id),
         "type": "warehouse",
         "name": wh.name,
         "description": wh.description,
-        "status": map_status(wh.calculate_status()),
+        "status": map_status(obj_status),
         "coordinates": f"{wh.latitude}, {wh.longitude}",
         "updatedAt": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "static": [],
         "telemetry": [
-            format_telemetry_item("capacity", "Заполнено", "%", wh.capacity_used, 0, 100, status=wh.calculate_status()),
-            format_telemetry_item("temperature", "Температура склада", "°C", wh.temperature, -5, 40, status=wh.calculate_status()),
-            format_telemetry_item("humidity", "Влажность", "%", wh.humidity, 0, 100, status=wh.calculate_status()),
-            format_telemetry_item("trucks_count", "Грузовиков на погрузке", "", wh.trucks_count, 0, 50, status=wh.calculate_status())
+            format_telemetry_item("capacity", "Заполнено", "%", wh.capacity_used, 0, 100, status=capacity_status),
+            format_telemetry_item("temperature", "Температура склада", "°C", wh.temperature, -5, 40, status=temp_status),
+            format_telemetry_item("humidity", "Влажность", "%", wh.humidity, 0, 100, status=hum_status),
+            format_telemetry_item("trucks_count", "Грузовиков на погрузке", "", wh.trucks_count, 0, 50, status=obj_status)
         ]
     }
 
 # Сериализатор дрона
 def serialize_drone(drone):
+
+    battery_status = drone.get_battery_status() if hasattr(drone, 'get_battery_status') else "normal"
+    rpm_status = drone.get_rpm_status() if hasattr(drone, 'get_rpm_status') else "normal"
+    speed_status = drone.get_speed_status() if hasattr(drone, 'get_speed_status') else "normal"
+    altitude_status = drone.get_altitude_status() if hasattr(drone, 'get_altitude_status') else "normal"
+    
+    obj_status = drone.calculate_status() if hasattr(drone, 'calculate_status') else (drone.status or "normal")
+
     return {
         "id": str(drone.id),
         "type": "drone",
         "name": drone.name,
         "description": drone.description,
-        "status": map_status(drone.calculate_status()),
+        "status": map_status(obj_status),
         "coordinates": f"{drone.latitude}, {drone.longitude}",
         "updatedAt": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "static": [
@@ -212,10 +239,10 @@ def serialize_drone(drone):
             { "label": "Точка прибытия", "value": f"{drone.end_lat}, {drone.end_lon}" }
         ],
         "telemetry": [
-            format_telemetry_item("battery", "Заряд", "%", drone.battery, status=drone.calculate_status()),
-            format_telemetry_item("speed", "Скорость", "км/ч", drone.speed, 0, 140, status=drone.calculate_status()),
-            format_telemetry_item("altitude", "Высота", "м", drone.altitude, 0, 150),
-            format_telemetry_item("propellerRpm", "Обороты двигателя", "об/мин", drone.propeller_rpm, 0, 11000, status=drone.calculate_status())
+            format_telemetry_item("battery", "Заряд", "%", drone.battery, status=battery_status),
+            format_telemetry_item("speed", "Скорость", "км/ч", drone.speed, 0, 140, status=speed_status),
+            format_telemetry_item("altitude", "Высота", "м", drone.altitude, 0, 150, status=altitude_status),
+            format_telemetry_item("propellerRpm", "Обороты двигателя", "об/мин", drone.propeller_rpm, 0, 11000, status=rpm_status)
         ]
     }
 

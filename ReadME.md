@@ -36,7 +36,6 @@ pip install -r requirements.txt
 
 Затем перейти в папку frontend в терминале
 Установите зависимости Node.js с помощью команды npm install
-Запустить сервер разработки Vite с помощью команды npm run dev
 
 Проект установлен
 
