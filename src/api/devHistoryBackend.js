@@ -3,7 +3,7 @@ import {
   ARCHIVE_ALL_OBJECTS_LABEL,
   ARCHIVE_ALL_STATUSES_LABEL,
 } from "../utils/constants.js";
-import { normalizeArchiveStatus } from "../utils/archiveHistory.js";
+import { getArchiveStatusMeta, normalizeArchiveStatus } from "../utils/archiveHistory.js";
 
 const objectCatalog = [
   {
@@ -181,6 +181,14 @@ function escapeCsvValue(value) {
   return normalized;
 }
 
+function buildExportRow(row) {
+  return {
+    ...row,
+    type: ARCHIVE_OBJECT_TYPE_LABELS[row.type] ?? row.type,
+    status: getArchiveStatusMeta(row.status).label,
+  };
+}
+
 export const devHistoryBackend = {
   async getHistory(filters = {}) {
     await mockDelay(240);
@@ -195,7 +203,7 @@ export const devHistoryBackend = {
   async exportHistoryCsv(filters = {}) {
     await mockDelay(180);
 
-    const rows = filterRows(filters);
+    const rows = filterRows(filters).map(buildExportRow);
     const headers = [
       "time",
       "object",
