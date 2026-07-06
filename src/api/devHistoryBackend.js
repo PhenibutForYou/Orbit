@@ -1,39 +1,14 @@
 import {
-  ARCHIVE_OBJECT_OPTIONS,
   ARCHIVE_OBJECT_TYPE_LABELS,
   ARCHIVE_ALL_OBJECTS_LABEL,
   ARCHIVE_ALL_STATUSES_LABEL,
-  ARCHIVE_STATUS_OPTIONS,
 } from "../utils/constants.js";
-
-const statusMap = {
-  normal: {
-    filterLabel: "Норма",
-    objectStatus: "Норма",
-    badge: "Норма",
-  },
-  warning: {
-    filterLabel: "Предупреждение",
-    objectStatus: "Предупреждение",
-    badge: "Предупреждение",
-  },
-  alert: {
-    filterLabel: "Критические",
-    objectStatus: "Критическое",
-    badge: "Критическое",
-  },
-  nodata: {
-    filterLabel: "Нет данных",
-    objectStatus: "Нет данных",
-    badge: "Нет данных",
-  },
-};
+import { normalizeArchiveStatus } from "../utils/archiveHistory.js";
 
 const objectCatalog = [
   {
     name: "АЗС-01",
     type: "fuel-station",
-    icon: "/images/azs_icon.svg",
     coordinates: "14.22850, -22.67140",
     parameters: [
       { label: "Запас топлива", unit: "%", base: 74, delta: 11, threshold: { warningBelow: 45, alertBelow: 20 } },
@@ -44,7 +19,6 @@ const objectCatalog = [
   {
     name: "Грузовик-02",
     type: "car",
-    icon: "/images/car_icon.svg",
     coordinates: "-41.50320, 18.19430",
     parameters: [
       { label: "Топливо", unit: "%", base: 62, delta: 14, threshold: { warningBelow: 40, alertBelow: 18 } },
@@ -55,7 +29,6 @@ const objectCatalog = [
   {
     name: "Дрон-03",
     type: "drone",
-    icon: "/images/drone_icon.svg",
     coordinates: "39.11740, 56.98120",
     parameters: [
       { label: "Батарея", unit: "%", base: 79, delta: 15, threshold: { warningBelow: 45, alertBelow: 22 } },
@@ -66,7 +39,6 @@ const objectCatalog = [
   {
     name: "Склад-04",
     type: "warehouse",
-    icon: "/images/warehouse_icon.svg",
     coordinates: "-8.67010, -37.24560",
     parameters: [
       { label: "Заполненность", unit: "%", base: 58, delta: 17, threshold: { warningAbove: 68, alertAbove: 86 } },
@@ -119,18 +91,6 @@ function getStatusClass(parameter, rawValue) {
   return "normal";
 }
 
-function getObjectStatusClass(entries) {
-  if (entries.some((entry) => entry.statusClass === "alert")) {
-    return "alert";
-  }
-
-  if (entries.some((entry) => entry.statusClass === "warning")) {
-    return "warning";
-  }
-
-  return "normal";
-}
-
 function buildValue(base, delta, tick) {
   const rawValue = base + Math.round(Math.sin(tick / 3.2) * delta) + (((tick * 11) % 7) - 3);
   return Math.max(0, rawValue);
@@ -155,25 +115,18 @@ function buildRows() {
         statusClass,
       };
     });
-    const objectStatusClass = getObjectStatusClass(parameterEntries);
-
     parameterEntries.forEach((entry, index) => {
       const rowDate = new Date(eventDate.getTime() + (index * 17 * 60 * 1000));
-      const statusMeta = statusMap[entry.statusClass] ?? statusMap.nodata;
 
       rows.push({
         time: formatDateTime(rowDate),
         timestamp: rowDate.toISOString(),
         object: object.name,
-        icon: object.icon,
+        type: object.type,
         coordinates: object.coordinates,
         parameter: entry.parameter,
         value: entry.value,
-        badge: statusMeta.badge,
-        badgeClass: entry.statusClass,
-        statusClass: objectStatusClass,
-        objectStatus: statusMap[objectStatusClass].objectStatus,
-        type: object.type,
+        status: entry.statusClass,
       });
     });
   }
@@ -209,9 +162,7 @@ function filterRows(filters = {}) {
     }
 
     if (filters.status && filters.status !== ARCHIVE_ALL_STATUSES_LABEL) {
-      const statusMeta = statusMap[row.badgeClass];
-
-      if (!statusMeta || statusMeta.filterLabel !== filters.status) {
+      if (row.status !== normalizeArchiveStatus(filters.status)) {
         return false;
       }
     }
@@ -237,11 +188,7 @@ export const devHistoryBackend = {
     const rows = filterRows(filters).map(({ timestamp, ...row }) => row);
 
     return {
-      filters,
       rows,
-      total: rows.length,
-      objectOptions: ARCHIVE_OBJECT_OPTIONS,
-      statusOptions: ARCHIVE_STATUS_OPTIONS,
     };
   },
 
@@ -250,15 +197,13 @@ export const devHistoryBackend = {
 
     const rows = filterRows(filters);
     const headers = [
-      "time",
-      "object",
-      "coordinates",
-      "parameter",
-      "value",
-      "badge",
-      "badgeClass",
-      "statusClass",
-      "objectStatus",
+      "время",
+      "объект",
+      "тип",
+      "координаты",
+      "параметр",
+      "значение",
+      "статус",
     ];
     const csvRows = rows.map((row) => headers.map((header) => escapeCsvValue(row[header])).join(","));
 

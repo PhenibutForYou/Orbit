@@ -9,10 +9,8 @@ import {
 } from "react";
 import { monitoringApi } from "../api/monitoringApi.js";
 import { InfrastructureObject } from "../domain/InfrastructureObject.js";
-import { MAX_OBJECTS_COUNT } from "../utils/constants.js";
 
 const ObjectsContext = createContext(null);
-export { MAX_OBJECTS_COUNT };
 
 const UI_ENTER_DELAY_MS = 40;
 const UI_REMOVE_DURATION_MS = 260;
@@ -22,7 +20,7 @@ const initialState = {
   activeObjectId: null,
   loading: true,
   error: null,
-  maxObjectsCount: MAX_OBJECTS_COUNT,
+  maxObjectsCount: 0,
   lastEventAt: null,
   markerPulse: {
     objectId: null,
