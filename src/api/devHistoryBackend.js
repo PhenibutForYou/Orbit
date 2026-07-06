@@ -197,13 +197,13 @@ export const devHistoryBackend = {
 
     const rows = filterRows(filters);
     const headers = [
-      "время",
-      "объект",
-      "тип",
-      "координаты",
-      "параметр",
-      "значение",
-      "статус",
+      "time",
+      "object",
+      "type",
+      "coordinates",
+      "parameter",
+      "value",
+      "status",
     ];
     const csvRows = rows.map((row) => headers.map((header) => escapeCsvValue(row[header])).join(","));
 
