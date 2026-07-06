@@ -1,37 +1,7 @@
-import { API_CONFIG } from "../utils/constants.js";
+import { API_CONFIG, ARCHIVE_OBJECT_OPTIONS, ARCHIVE_STATUS_OPTIONS } from "../utils/constants.js";
+import { buildArchiveSummary, getArchiveStatusMeta, normalizeArchiveRows } from "../utils/archiveHistory.js";
 import { buildApiUrl, requestJson } from "./httpClient.js";
-
-const statusOptions = ["Все статусы", "Норма", "Предупреждения", "Критические", "Нет данных"];
-const statusMeta = {
-  normal: {
-    label: "Норма",
-    tone: "normal",
-    color: "#1fda72",
-    spark: "archive-stat-card__spark--green",
-    icon: "/images/stat-online.svg",
-  },
-  warning: {
-    label: "Предупреждения",
-    tone: "warning",
-    color: "#ffc72a",
-    spark: "archive-stat-card__spark--amber",
-    icon: "/images/stat-warning.svg",
-  },
-  alert: {
-    label: "Критические",
-    tone: "alert",
-    color: "#ff554d",
-    spark: "archive-stat-card__spark--red",
-    icon: "/images/stat-alert.svg",
-  },
-  nodata: {
-    label: "Нет данных",
-    tone: "nodata",
-    color: "#95a3b8",
-    spark: "archive-stat-card__spark--blue",
-    icon: "/images/stat-total.svg",
-  },
-};
+import { devHistoryBackend } from "./devHistoryBackend.js";
 
 function parseArchiveDateTime(value) {
   const [datePart, timePart = "00:00"] = String(value ?? "").trim().split(" ");
@@ -43,22 +13,7 @@ function parseArchiveDateTime(value) {
 }
 
 function buildSummary(rows) {
-  const counters = {
-    normal: 0,
-    warning: 0,
-    alert: 0,
-    nodata: 0,
-  };
-
-  for (const row of rows) {
-    counters[row.badgeClass] += 1;
-  }
-
-  return Object.entries(counters).map(([status, value]) => ({
-    ...statusMeta[status],
-    status,
-    value,
-  }));
+  return buildArchiveSummary(rows);
 }
 
 function buildStats(rows) {
@@ -82,8 +37,8 @@ function buildStats(rows) {
         label: item.label,
         value: item.value,
         meta: `${percent(item.value)}% от всех`,
-        icon: item.icon,
-        spark: item.spark,
+        icon: getArchiveStatusMeta(item.status).icon,
+        spark: getArchiveStatusMeta(item.status).spark,
       })),
     ],
   };
@@ -106,26 +61,40 @@ function buildPeriodLabel(filters = {}) {
   return `${days} дн. ${hours} ч. ${minutes} мин.`;
 }
 
+function buildHistoryResponse(payload, filters) {
+  const rows = normalizeArchiveRows(payload?.rows);
+
+  return {
+    filters,
+    rows,
+    total: rows.length,
+    summary: buildSummary(rows),
+    stats: buildStats(rows),
+    periodLabel: buildPeriodLabel(filters),
+    objectOptions: ARCHIVE_OBJECT_OPTIONS,
+    statusOptions: ARCHIVE_STATUS_OPTIONS,
+  };
+}
+
 export const historyApi = {
   async getHistory(filters) {
+    if (API_CONFIG.realtimeTransport === "mock") {
+      const payload = await devHistoryBackend.getHistory(filters);
+      return buildHistoryResponse(payload, filters);
+    }
+
     const payload = await requestJson(API_CONFIG.historyEndpoint, {
       params: filters,
     });
-    const rows = Array.isArray(payload.rows) ? payload.rows : [];
 
-    return {
-      filters: payload.filters ?? filters,
-      rows,
-      total: payload.total ?? rows.length,
-      summary: payload.summary ?? buildSummary(rows),
-      stats: payload.stats ?? buildStats(rows),
-      periodLabel: payload.periodLabel ?? buildPeriodLabel(filters),
-      objectOptions: payload.objectOptions ?? ["Все объекты"],
-      statusOptions: payload.statusOptions ?? statusOptions,
-    };
+    return buildHistoryResponse(payload, filters);
   },
 
   async exportHistoryCsv(filters) {
+    if (API_CONFIG.realtimeTransport === "mock") {
+      return devHistoryBackend.exportHistoryCsv(filters);
+    }
+
     const response = await fetch(buildApiUrl(API_CONFIG.historyExportEndpoint, filters), {
       headers: {
         Accept: "text/csv",

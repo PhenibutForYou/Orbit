@@ -1,8 +1,8 @@
-import { MAX_OBJECTS_COUNT } from "../utils/constants.js";
 import { createRandomCoordinates, parseCartesianCoordinates } from "../utils/coordinates.js";
 
 const EVENT_INTERVAL_MS = 1000;
 const MIN_OBJECTS_COUNT = 4;
+const MOCK_MAX_OBJECTS = 4;
 
 const objectTemplates = [
   {
@@ -210,7 +210,7 @@ class DevMonitoringBackend {
   async getSnapshot() {
     return {
       objects: this.objects.map((object) => ({ ...object })),
-      maxObjects: MAX_OBJECTS_COUNT,
+      maxObjects: MOCK_MAX_OBJECTS,
     };
   }
 
@@ -255,7 +255,7 @@ class DevMonitoringBackend {
   emitNextEvent() {
     this.tick += 1;
 
-    if (this.tick % 9 === 0 && this.objects.length < MAX_OBJECTS_COUNT) {
+    if (this.tick % 9 === 0 && this.objects.length < MOCK_MAX_OBJECTS) {
       const object = createObject(this.nextIndex);
       this.nextIndex += 1;
       this.objects = [...this.objects, object];

@@ -1,4 +1,5 @@
 import { buildArchivePaginationItems } from "./archiveUtils.js";
+import { getArchiveObjectIcon, getArchiveStatusMeta } from "../../utils/archiveHistory.js";
 
 function ArchiveColumns() {
   return (
@@ -13,7 +14,17 @@ function ArchiveColumns() {
   );
 }
 
-export function ArchiveTableClean({ rows, totalRows, currentPage, rowsPerPage, pageSizeOpen, onPageChange, onRowsPerPageChange, onTogglePageSize }) {
+export function ArchiveTableClean({
+  rows,
+  totalRows,
+  currentPage,
+  rowsPerPage,
+  pageSizeOpen,
+  emptyMessage = "Нет записей за выбранный период",
+  onPageChange,
+  onRowsPerPageChange,
+  onTogglePageSize,
+}) {
   const totalPages = Math.max(1, Math.ceil(rows.length / rowsPerPage));
   const safeCurrentPage = Math.min(Math.max(currentPage, 1), totalPages);
   const pageStartIndex = (safeCurrentPage - 1) * rowsPerPage;
@@ -44,26 +55,30 @@ export function ArchiveTableClean({ rows, totalRows, currentPage, rowsPerPage, p
           <tbody>
             {pageRows.length === 0 ? (
               <tr>
-                <td colSpan={6}>Нет записей за выбранный период</td>
+                <td colSpan={6}>{emptyMessage}</td>
               </tr>
-            ) : pageRows.map((row, index) => (
-              <tr key={`${row.time}-${row.object}-${index}`}>
-                <td>{row.time}</td>
-                <td>
-                  <div className="archive-table__object-cell">
-                    <img className="archive-table__object-icon" src={row.icon} alt="" />
-                    <div className="archive-table__object-meta">
-                    <strong>{row.object}</strong>
-                    <span className={`archive-table__object-status archive-table__object-status--${row.statusClass}`}>{row.objectStatus}</span>
+            ) : pageRows.map((row, index) => {
+              const statusMeta = getArchiveStatusMeta(row.status);
+
+              return (
+                <tr key={`${row.time}-${row.object}-${index}`}>
+                  <td>{row.time}</td>
+                  <td>
+                    <div className="archive-table__object-cell">
+                      <img className="archive-table__object-icon" src={getArchiveObjectIcon(row.type)} alt="" />
+                      <div className="archive-table__object-meta">
+                        <strong>{row.object}</strong>
+                        <span className={`archive-table__object-status archive-table__object-status--${statusMeta.tone}`}>{statusMeta.label}</span>
+                      </div>
                     </div>
-                  </div>
-                </td>
-                <td>{row.coordinates}</td>
-                <td>{row.parameter}</td>
-                <td><strong className="archive-table__value">{row.value}</strong></td>
-                <td><span className={`archive-table__badge archive-table__badge--${row.badgeClass ?? row.statusClass}`}>{row.badge}</span></td>
-              </tr>
-            ))}
+                  </td>
+                  <td>{row.coordinates}</td>
+                  <td>{row.parameter}</td>
+                  <td><strong className="archive-table__value">{row.value}</strong></td>
+                  <td><span className={`archive-table__badge archive-table__badge--${statusMeta.tone}`}>{statusMeta.label}</span></td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

@@ -12,7 +12,7 @@ const timePresets = ["00:00", "08:00", "12:00", "18:00", "23:59"];
 
 export function ArchiveDateField({ label, value, onChange }) {
   const [open, setOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(parseArchiveDateValue(value.split(" ")[0]) ?? new Date(2025, 4, 23));
+  const [selectedDate, setSelectedDate] = useState(parseArchiveDateValue(value.split(" ")[0]) ?? new Date(2026, 6, 1));
   const [viewDate, setViewDate] = useState(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1));
   const [timeValue, setTimeValue] = useState(value.split(" ")[1] ?? "00:00");
   const selectedValue = formatArchiveDateValue(selectedDate);
@@ -51,7 +51,7 @@ export function ArchiveDateField({ label, value, onChange }) {
         type="button"
         onClick={() => setOpen((current) => !current)}
       >
-        {value}
+        {value || "Выберите дату"}
       </button>
       <div className="archive-popover archive-popover--date" hidden={!open}>
         <div className="archive-popover__header">

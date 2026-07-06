@@ -4,6 +4,8 @@ import queue
 import json
 import time
 import os
+import io
+import csv
 from flask import Flask, request, jsonify, Response
 from pydantic import ValidationError
 from models import db, Car, GasStation, Warehouse, Drone
@@ -17,6 +19,9 @@ telemetry_data = {
     "warehouses": {},
     "drones": {}
 }
+
+# Локальное хранилище для истории
+history_storage = []
 
 # Словарь для отслеживания времени онлайна
 last_seen_tracker = {}
@@ -134,6 +139,80 @@ def send_to_bot_background(endpoint, payload):
 
     # Создание отдельного независимого потока
     threading.Thread(target=worker, daemon=True).start()
+
+# Функция для добавления записей в историю
+def append_to_history(serialized_obj):
+    now = datetime.now()
+    # Тут происходит разбор объекта телеметрии и сохранение его параметров в массив
+    print(f"[DEBUG] Добавление в историю для объекта: {serialized_obj.get('name')}")
+    for item in serialized_obj["telemetry"]:
+        record = {
+            "datetime_obj": now, # Для фильтрации по датам
+            "time": now.strftime("%d.%m.%Y %H:%M"),
+            "object": serialized_obj["name"],
+            "type": serialized_obj["type"],
+            "coordinates": serialized_obj["coordinates"],
+            "parameter": item["label"],
+            "value": item["value"],
+            "status": item["status"]
+        }
+        history_storage.append(record)
+
+    # Пусть будет ограничение на 100000 записей, т.к. это всё динамически сохраняестя в коде, а не записывается в бдшке.
+    if len(history_storage) > 10000:
+        history_storage.pop(0)
+
+# Функция для парсинга даты. Нужна для фильтров ниже
+def parse_frontend_date(date_str):
+    if not date_str:
+        return None
+    try:
+        return datetime.strptime(date_str.strip(), "%d.%m.%Y %H:%M")
+    except ValueError:
+        return None
+
+# Функция для фильтрации данных в истории
+def get_filtered_history(filters):
+    filtered_list = history_storage[:]
+
+    # Фильтр от определенной даты
+    date_from = parse_frontend_date(filters.get("dateFrom"))
+    if date_from:
+        filtered_list = [r for r in filtered_list if r["datetime_obj"] >= date_from]
+
+    # Фильтр до определенной даты
+    date_to = parse_frontend_date(filters.get("dateTo"))
+    if date_to:
+        filtered_list = [r for r in filtered_list if r["datetime_obj"] <= date_to]
+
+    # Фильтр по объекту
+    obj_filter = filters.get("object")
+    if obj_filter and obj_filter not in ["Все объекты", "Все типы", "ALL_OBJECTS"]:
+        mapping = {
+            "Машина": "car", 
+            "Дрон": "drone", 
+            "АЗС": "fuel-station", 
+            "Склад": "warehouse"
+        }
+        mapped_type = mapping.get(obj_filter)
+        if mapped_type:
+            filtered_list = [r for r in filtered_list if r["type"] == mapped_type]
+    
+    # Фильтр по статусу
+    status_filter = filters.get("status")
+    if status_filter and status_filter not in ["Все статусы", "ALL_STATUSES"]:
+        mapping_status = {
+            "Норма": "normal", 
+            "Предупреждение": "warning", 
+            "Критический": "alert"
+        }
+        mapped_status = mapping_status.get(status_filter)
+        if mapped_status:
+            filtered_list = [r for r in filtered_list if r["status"] == mapped_status]
+    
+    # В начале списка новые записимм
+    filtered_list.sort(key=lambda x: x["datetime_obj"], reverse=True)
+    return filtered_list
 
 # Сериализаторы к необходимому стандарту
 # Сериализатор машины
@@ -309,6 +388,9 @@ def receive_car():
     }
 
     db.session.commit() # Сохранение в бд
+
+    serialized = serialize_car(data)
+    append_to_history(serialized)
     
     # Вызов функции для отправки события
     broadcast_sse_event("updated", data.id, serialize_car(data))
@@ -368,6 +450,9 @@ def receive_gas_station():
 
     db.session.commit()
 
+    serialized = serialize_gas_station(data)
+    append_to_history(serialized)
+
     broadcast_sse_event("updated", data.id, serialize_gas_station(data))
     return jsonify({"status": "success", "object_status": new_status}), 201
 
@@ -424,6 +509,9 @@ def receive_warehouse():
     }
 
     db.session.commit()
+
+    serialized = serialize_warehouse(data)
+    append_to_history(serialized)
 
     broadcast_sse_event("updated", data.id, serialize_warehouse(data))
     return jsonify({"status": "success", "object_status": new_status}), 201
@@ -490,6 +578,9 @@ def receive_drone():
 
     db.session.commit()
 
+    serialized = serialize_drone(data)
+    append_to_history(serialized)
+
     broadcast_sse_event("updated", data.id, serialize_drone(data))
     return jsonify({"status": "success", "object_status": new_status}), 201
 
@@ -508,6 +599,69 @@ def get_infrastructure():
         "objects": all_objects,
         "maxObjects": 15 # Если поставить больше - будет лагать
     })
+
+# Маршрут для вывода истории на сацте
+@app.route('/api/history', methods=['GET'])
+def get_history():
+    filters = request.args.to_dict()
+    records = get_filtered_history(filters)
+
+    # Чистка объекта datetime перед отправкой в джейсон
+    clean_rows = []
+    for r in records:
+        clean_rows.append({
+            "time": r["time"],
+            "object": r["object"],
+            "type": r["type"],
+            "coordinates": r["coordinates"],
+            "parameter": r["parameter"],
+            "value": r["value"],
+            "status": r["status"]
+        })
+    
+    return jsonify({"rows": clean_rows})
+
+# Маршрут для создания и загрузки csv файла с историей
+@app.route('/api/history/export', methods=['GET'])
+def export_history_csv():
+    filters = request.args.to_dict()
+    records = get_filtered_history(filters)
+
+    # Тут создаётся виртуальный файл в памяти в который будут записаны все данные
+    si = io.StringIO()
+    cw = csv.writer(si, delimiter=';')
+
+    # Заголовки парсера csv
+    cw.writerow(["Время", "Объект", "Тип", "Координаты", "Параметр", "Значение", "Статус"])
+    # Локализация данных
+    type_labels = {"car": "Машина", "drone": "Дрон", "fuel-station": "АЗС", "warehouse": "Склад"}
+    status_labels = {"normal": "Норма", "warning": "Предупреждение", "alert": "Критический"}
+
+    # Цикл для прохода по всем данных и последующим записыванием их в файл
+    for r in records:
+        cw.writerow([
+            r["time"],
+            r["object"],
+            type_labels.get(r["type"], r["type"]),
+            r["coordinates"],
+            r["parameter"],
+            r["value"],
+            status_labels.get(r["status"], r["status"])
+        ])
+
+    # Тут для браузера формируются заголовки для загрузки файла history_export.csv
+    data_string = si.getvalue()
+
+    binary_data = data_string.encode('utf-8')
+
+    return Response(
+        binary_data,
+        mimetype="text/csv; charset=utf-8",
+        headers={
+            "Content-Disposition": "attachment; filename=history_export.csv",
+            "Cache-Control": "no-cache"
+        }
+    )
 
 # Стрим событий для фронтенда по SSE
 @app.route('/api/objects/events', methods=['GET'])
