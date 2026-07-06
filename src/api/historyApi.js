@@ -1,7 +1,8 @@
-import { API_CONFIG } from "../utils/constants.js";
+import { API_CONFIG, ARCHIVE_OBJECT_OPTIONS, ARCHIVE_STATUS_OPTIONS } from "../utils/constants.js";
 import { buildApiUrl, requestJson } from "./httpClient.js";
+import { devHistoryBackend } from "./devHistoryBackend.js";
 
-const statusOptions = ["Все статусы", "Норма", "Предупреждения", "Критические", "Нет данных"];
+const statusOptions = ARCHIVE_STATUS_OPTIONS;
 const statusMeta = {
   normal: {
     label: "Норма",
@@ -11,7 +12,7 @@ const statusMeta = {
     icon: "/images/stat-online.svg",
   },
   warning: {
-    label: "Предупреждения",
+    label: "Предупреждение",
     tone: "warning",
     color: "#ffc72a",
     spark: "archive-stat-card__spark--amber",
@@ -108,6 +109,22 @@ function buildPeriodLabel(filters = {}) {
 
 export const historyApi = {
   async getHistory(filters) {
+    if (API_CONFIG.realtimeTransport === "mock") {
+      const payload = await devHistoryBackend.getHistory(filters);
+      const rows = Array.isArray(payload.rows) ? payload.rows : [];
+
+      return {
+        filters: payload.filters ?? filters,
+        rows,
+        total: payload.total ?? rows.length,
+        summary: payload.summary ?? buildSummary(rows),
+        stats: payload.stats ?? buildStats(rows),
+        periodLabel: payload.periodLabel ?? buildPeriodLabel(filters),
+        objectOptions: payload.objectOptions ?? ARCHIVE_OBJECT_OPTIONS,
+        statusOptions: payload.statusOptions ?? ARCHIVE_STATUS_OPTIONS,
+      };
+    }
+
     const payload = await requestJson(API_CONFIG.historyEndpoint, {
       params: filters,
     });
@@ -120,12 +137,16 @@ export const historyApi = {
       summary: payload.summary ?? buildSummary(rows),
       stats: payload.stats ?? buildStats(rows),
       periodLabel: payload.periodLabel ?? buildPeriodLabel(filters),
-      objectOptions: payload.objectOptions ?? ["Все объекты"],
-      statusOptions: payload.statusOptions ?? statusOptions,
+      objectOptions: payload.objectOptions ?? ARCHIVE_OBJECT_OPTIONS,
+      statusOptions: payload.statusOptions ?? ARCHIVE_STATUS_OPTIONS,
     };
   },
 
   async exportHistoryCsv(filters) {
+    if (API_CONFIG.realtimeTransport === "mock") {
+      return devHistoryBackend.exportHistoryCsv(filters);
+    }
+
     const response = await fetch(buildApiUrl(API_CONFIG.historyExportEndpoint, filters), {
       headers: {
         Accept: "text/csv",

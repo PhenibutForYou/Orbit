@@ -13,7 +13,17 @@ function ArchiveColumns() {
   );
 }
 
-export function ArchiveTableClean({ rows, totalRows, currentPage, rowsPerPage, pageSizeOpen, onPageChange, onRowsPerPageChange, onTogglePageSize }) {
+export function ArchiveTableClean({
+  rows,
+  totalRows,
+  currentPage,
+  rowsPerPage,
+  pageSizeOpen,
+  emptyMessage = "Нет записей за выбранный период",
+  onPageChange,
+  onRowsPerPageChange,
+  onTogglePageSize,
+}) {
   const totalPages = Math.max(1, Math.ceil(rows.length / rowsPerPage));
   const safeCurrentPage = Math.min(Math.max(currentPage, 1), totalPages);
   const pageStartIndex = (safeCurrentPage - 1) * rowsPerPage;
@@ -44,7 +54,7 @@ export function ArchiveTableClean({ rows, totalRows, currentPage, rowsPerPage, p
           <tbody>
             {pageRows.length === 0 ? (
               <tr>
-                <td colSpan={6}>Нет записей за выбранный период</td>
+                <td colSpan={6}>{emptyMessage}</td>
               </tr>
             ) : pageRows.map((row, index) => (
               <tr key={`${row.time}-${row.object}-${index}`}>

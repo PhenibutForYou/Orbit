@@ -25,3 +25,29 @@ export const API_CONFIG = {
   historyEndpoint: readStringFromEnv("VITE_API_HISTORY_ENDPOINT", "/api/history"),
   historyExportEndpoint: readStringFromEnv("VITE_API_HISTORY_EXPORT_ENDPOINT", "/api/history/export"),
 };
+
+export const ARCHIVE_ALL_OBJECTS_LABEL = "Все объекты";
+export const ARCHIVE_ALL_STATUSES_LABEL = "Все статусы";
+
+export const ARCHIVE_OBJECT_OPTIONS = [
+  ARCHIVE_ALL_OBJECTS_LABEL,
+  "АЗС",
+  "Дрон",
+  "Машина",
+  "Склад",
+];
+
+export const ARCHIVE_STATUS_OPTIONS = [
+  ARCHIVE_ALL_STATUSES_LABEL,
+  "Норма",
+  "Предупреждение",
+  "Критические",
+  "Нет данных",
+];
+
+export const ARCHIVE_OBJECT_TYPE_LABELS = {
+  "fuel-station": "АЗС",
+  drone: "Дрон",
+  car: "Машина",
+  warehouse: "Склад",
+};

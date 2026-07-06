@@ -54,11 +54,29 @@ export function ObjectsPanel() {
 
   const sortedObjects = [...objects].sort((firstObject, secondObject) => {
     if (sortMode === "status") {
-      return (statusOrder[firstObject.status] ?? statusOrder[firstObject.statusClass] ?? 99)
-        - (statusOrder[secondObject.status] ?? statusOrder[secondObject.statusClass] ?? 99);
+      const firstStatusOrder = statusOrder[firstObject.status] ?? statusOrder[firstObject.statusClass] ?? 99;
+      const secondStatusOrder = statusOrder[secondObject.status] ?? statusOrder[secondObject.statusClass] ?? 99;
+
+      if (firstStatusOrder !== secondStatusOrder) {
+        return firstStatusOrder - secondStatusOrder;
+      }
+
+      const updatedAtDiff = getObjectTimestamp(secondObject) - getObjectTimestamp(firstObject);
+
+      if (updatedAtDiff !== 0) {
+        return updatedAtDiff;
+      }
+
+      return firstObject.name.localeCompare(secondObject.name, "ru-RU");
     }
 
-    return getObjectTimestamp(secondObject) - getObjectTimestamp(firstObject);
+    const updatedAtDiff = getObjectTimestamp(secondObject) - getObjectTimestamp(firstObject);
+
+    if (updatedAtDiff !== 0) {
+      return updatedAtDiff;
+    }
+
+    return firstObject.name.localeCompare(secondObject.name, "ru-RU");
   });
 
   useEffect(() => {

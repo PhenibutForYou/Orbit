@@ -30,6 +30,23 @@ const initialState = {
   },
 };
 
+function normalizeObjectState(object, options = {}) {
+  const normalizedObject = new InfrastructureObject(object).toDTO();
+
+  return {
+    ...normalizedObject,
+    uiState: options.uiState ?? object.uiState ?? null,
+  };
+}
+
+function limitObjectsByCapacity(objects, maxObjectsCount) {
+  if (!Number.isFinite(maxObjectsCount) || maxObjectsCount <= 0) {
+    return objects;
+  }
+
+  return objects.slice(0, maxObjectsCount);
+}
+
 function mergeTelemetry(currentTelemetry = [], updates = []) {
   if (updates.length === 0) {
     return currentTelemetry;
@@ -72,13 +89,15 @@ function getEventUpdatedAt(event) {
 function reducer(state, action) {
   switch (action.type) {
     case "objectsLoaded": {
+      const nextMaxObjectsCount = action.maxObjectsCount ?? state.maxObjectsCount;
+      const limitedObjects = limitObjectsByCapacity(action.objects, nextMaxObjectsCount);
       const activeStillExists = action.objects.some(
         (item) => item.id === state.activeObjectId,
       );
 
-      const objects = action.animate
-        ? action.objects.map((item) => ({ ...item, uiState: "entering" }))
-        : action.objects;
+      const objects = limitedObjects.map((item) => normalizeObjectState(item, {
+        uiState: action.animate ? "entering" : item.uiState,
+      }));
 
       return {
         ...state,
@@ -86,7 +105,7 @@ function reducer(state, action) {
         activeObjectId: activeStillExists ? state.activeObjectId : null,
         loading: false,
         error: null,
-        maxObjectsCount: action.maxObjectsCount ?? state.maxObjectsCount,
+        maxObjectsCount: nextMaxObjectsCount,
       };
     }
 
@@ -126,7 +145,7 @@ function reducer(state, action) {
           objects:
             alreadyExists || state.objects.length >= state.maxObjectsCount
               ? state.objects
-              : [...state.objects, { ...event.object, uiState: "entering" }],
+              : [...state.objects, normalizeObjectState(event.object, { uiState: "entering" })],
           lastEventAt: getEventUpdatedAt(event) ?? state.lastEventAt,
         };
       }
@@ -139,10 +158,10 @@ function reducer(state, action) {
               return item;
             }
 
-            return {
-              ...(event.object ?? applyObjectPatch(item, event.patch)),
-              uiState: item.uiState,
-            };
+            return normalizeObjectState(
+              event.object ?? applyObjectPatch(item, event.patch),
+              { uiState: item.uiState },
+            );
           }),
           lastEventAt: getEventUpdatedAt(event) ?? state.lastEventAt,
         };

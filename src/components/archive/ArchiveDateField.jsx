@@ -51,7 +51,7 @@ export function ArchiveDateField({ label, value, onChange }) {
         type="button"
         onClick={() => setOpen((current) => !current)}
       >
-        {value}
+        {value || "Выберите дату"}
       </button>
       <div className="archive-popover archive-popover--date" hidden={!open}>
         <div className="archive-popover__header">
